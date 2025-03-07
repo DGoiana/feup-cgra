@@ -32,9 +32,6 @@ export class MyTrangram extends CGFobject {
     this.scene.scale(scaleFactor,scaleFactor,scaleFactor)
     this.scene.translate(-0.3,-0.5,0)
     this.scene.rotate(squareRadians,0,0,1)
-/*     this.scene.setAmbient(1, 0, 0,1.0)
-    this.scene.setDiffuse(1, 0, 0,1.0)
-    this.scene.setSpecular(1*sFactor, 0, 0,1.0) */
     this.diamond.display();
     this.scene.popMatrix()
 
