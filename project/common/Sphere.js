@@ -1,6 +1,6 @@
 import { CGFobject, CGFscene } from "../../lib/CGF.js";
 /**
-* MyPlane
+* MySphere
 * @constructor
  * @param {CGFscene} scene - Reference to MyScene object
  * @param {number} slices
