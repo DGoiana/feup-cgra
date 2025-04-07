@@ -31,11 +31,11 @@ export class MyScene extends CGFscene {
     //Initialize scene objects
     this.axis = new CGFaxis(this, 20, 1);
     this.plane = new MyPlane(this, 64);
-    this.panorama = new MyPanorama(this, new CGFtexture(this, "textures/image.png"))
+    this.panorama = new MyPanorama(this, new CGFtexture(this, "images/sky.png"))
 
     this.grass = new CGFappearance(this);
     this.grass.setDiffuse(1, 1, 1, 1)
-    this.grass.setTexture(new CGFtexture(this, "textures/grass.jpg"))
+    this.grass.setTexture(new CGFtexture(this, "images/grass.jpg"))
   }
   initLights() {
     this.lights[0].setPosition(200, 200, 200, 1);
@@ -48,7 +48,7 @@ export class MyScene extends CGFscene {
       1,
       0.1,
       1000,
-      vec3.fromValues(25, 25, 25),
+      vec3.fromValues(25, 50, 25),
       vec3.fromValues(0, 0, 0)
     );
   }
