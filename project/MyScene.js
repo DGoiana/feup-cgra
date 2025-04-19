@@ -1,7 +1,7 @@
 import { CGFscene, CGFcamera, CGFaxis, CGFtexture, CGFappearance, CGFshader } from "../lib/CGF.js";
 import { MyPlane } from "./MyPlane.js";
 import { MyPanorama } from "./panorama/MyPanorama.js";
-
+import { MyBuilding } from "./MyBuilding.js";
 /**
  * MyScene
  * @constructor
@@ -28,9 +28,29 @@ export class MyScene extends CGFscene {
 
     this.setUpdatePeriod(50);
 
+    // Applied Material
+    this.planeMaterial = new CGFappearance(this);
+    this.planeMaterial.setAmbient(0.5, 0.5, 0.5, 1);
+    this.planeMaterial.setDiffuse(0.9, 0.9, 0.9, 1);
+    this.planeMaterial.setSpecular(0.1, 0.1, 0.1, 1);
+    this.planeMaterial.setShininess(10.0);
+    this.planeMaterial.loadTexture('images/default.png');
+    this.planeMaterial.setTextureWrap('REPEAT', 'REPEAT');
+
+    this.planeTexture = new CGFtexture(this,'images/grass.jpg');
+    this.planeMaterial.setTexture(this.planeTexture);
+
+    // Arguments
+    const totalLength = 10;
+    const numFloor = 5;
+    const numWindow = 3;
+    const windowTexture = 'images/window.jpg';
+    const buildingColor = [255,255,255];
+
     //Initialize scene objects
     this.axis = new CGFaxis(this, 20, 1);
     this.plane = new MyPlane(this, 64);
+    this.building = new MyBuilding(this,totalLength,numFloor,numWindow,windowTexture,buildingColor);
     this.panorama = new MyPanorama(this, new CGFtexture(this, "images/sky.png"))
 
     this.grass = new CGFappearance(this);
@@ -96,12 +116,19 @@ export class MyScene extends CGFscene {
 
     this.setDefaultAppearance();
 
+
+    this.pushMatrix()
+
+    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
+    this.building.display();
     this.panorama.display()
-
     this.grass.apply()
-
     this.scale(500, 1, 500);
     this.rotate(-Math.PI / 2, 1, 0, 0);
     this.plane.display();
+
+
+    this.popMatrix();
+
   }
 }
