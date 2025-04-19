@@ -13,7 +13,7 @@ export class MyWindow extends CGFobject {
     this.windowMaterial.setDiffuse(0.9, 0.9, 0.9, 1);
     this.windowMaterial.setSpecular(0.1, 0.1, 0.1, 1);
     this.windowMaterial.setShininess(10.0);
-    this.windowMaterial.loadTexture('textures/default.png');
+    this.windowMaterial.loadTexture('images/default.png');
     this.windowMaterial.setTextureWrap('REPEAT', 'REPEAT');
 
     this.windowTexture = new CGFtexture(this.scene,this.texture);

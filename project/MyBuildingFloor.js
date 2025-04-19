@@ -14,8 +14,8 @@ export class MyBuildingFloor extends CGFobject {
     for(let i = 0; i < numWindow; i++) {
       this.windows.push(new MyWindow(scene,windowTexture))
     }
-    this.heliport = new MyWindow(scene,'textures/heliport.jpg');
-    this.entrance = new MyWindow(scene,'textures/entrance.jpg');
+    this.heliport = new MyWindow(scene,'images/heliport.jpg');
+    this.entrance = new MyWindow(scene,'images/entrance.jpg');
   }
 
 	display() {
