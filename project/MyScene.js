@@ -1,6 +1,6 @@
-import { CGFscene, CGFcamera, CGFaxis } from "../lib/CGF.js";
+import { CGFscene, CGFcamera, CGFaxis, CGFappearance, CGFtexture } from "../lib/CGF.js";
+import { MyBuilding } from "./MyBuilding.js";
 import { MyPlane } from "./MyPlane.js";
-
 /**
  * MyScene
  * @constructor
@@ -27,9 +27,29 @@ export class MyScene extends CGFscene {
 
     this.setUpdatePeriod(50);
 
+    // Applied Material
+    this.planeMaterial = new CGFappearance(this);
+    this.planeMaterial.setAmbient(0.5, 0.5, 0.5, 1);
+    this.planeMaterial.setDiffuse(0.9, 0.9, 0.9, 1);
+    this.planeMaterial.setSpecular(0.1, 0.1, 0.1, 1);
+    this.planeMaterial.setShininess(10.0);
+    this.planeMaterial.loadTexture('textures/default.png');
+    this.planeMaterial.setTextureWrap('REPEAT', 'REPEAT');
+
+    this.planeTexture = new CGFtexture(this,'textures/grass.jpg');
+    this.planeMaterial.setTexture(this.planeTexture);
+
+    // Arguments
+    const totalLength = 30;
+    const numFloor = 5;
+    const numWindow = 3;
+    const windowTexture = 'textures/window.jpg';
+    const buildingColor = [255,255,255];
+
     //Initialize scene objects
     this.axis = new CGFaxis(this, 20, 1);
     this.plane = new MyPlane(this, 64);
+    this.building = new MyBuilding(this,totalLength,numFloor,numWindow,windowTexture,buildingColor);
   }
   initLights() {
     this.lights[0].setPosition(200, 200, 200, 1);
@@ -90,8 +110,15 @@ export class MyScene extends CGFscene {
 
     this.setDefaultAppearance();
 
+    this.building.display();
+    this.planeMaterial.apply();
+    this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
+
+    this.pushMatrix()
     this.scale(400, 1, 400);
     this.rotate(-Math.PI / 2, 1, 0, 0);
     this.plane.display();
+    this.popMatrix();
+
   }
 }
