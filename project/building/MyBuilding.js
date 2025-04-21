@@ -20,15 +20,6 @@ export class MyBuilding extends CGFobject {
     this.colorMaterial.setShininess(10.0);
   }
 
-  setDefaultAppearance() {
-    this.defaultMaterial = new CGFappearance(this.scene);
-    this.defaultMaterial.setAmbient(0.5, 0.5, 0.5, 1.0);
-    this.defaultMaterial.setDiffuse(0.5, 0.5, 0.5, 1.0);
-    this.defaultMaterial.setSpecular(0.5, 0.5, 0.5, 1.0);
-    this.defaultMaterial.setShininess(10.0);
-    this.defaultMaterial.apply();
-  }
-
 	display() {
     const scale = this.totalLength;
     const planeOffset = 0.5

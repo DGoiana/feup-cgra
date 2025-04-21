@@ -20,21 +20,11 @@ export class MyWindow extends CGFobject {
     this.windowMaterial.setTexture(this.windowTexture);
   }
 
-  setDefaultAppearance() {
-    this.defaultMaterial = new CGFappearance(this.scene);
-    this.defaultMaterial.setAmbient(0.5, 0.5, 0.5, 1.0);
-    this.defaultMaterial.setDiffuse(0.5, 0.5, 0.5, 1.0);
-    this.defaultMaterial.setSpecular(0.5, 0.5, 0.5, 1.0);
-    this.defaultMaterial.setShininess(10.0);
-    this.defaultMaterial.apply();
-  }
-
   display() {
     this.scene.pushMatrix();
     this.windowMaterial.apply();
     this.scene.gl.texParameteri(this.scene.gl.TEXTURE_2D, this.scene.gl.TEXTURE_MAG_FILTER, this.scene.gl.NEAREST);
     this.quad.display();
     this.scene.popMatrix();
-    this.setDefaultAppearance();
   }
 }
