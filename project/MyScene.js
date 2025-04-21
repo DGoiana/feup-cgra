@@ -2,7 +2,7 @@ import { CGFscene, CGFcamera, CGFaxis, CGFtexture, CGFappearance } from "../lib/
 import { MyPlane } from "./environment/MyPlane.js";
 import { MyPanorama } from "./environment/MyPanorama.js";
 import { MyBuilding } from "./building/MyBuilding.js";
-import { MyTree } from "./forest/MyTree.js"
+import { MyForest } from "./forest/MyForest.js"
 
 /**
  * MyScene
@@ -35,7 +35,7 @@ export class MyScene extends CGFscene {
     this.plane = new MyPlane(this, 64);
     this.building = new MyBuilding(this, 10, 5, 3, 'images/window.jpg', [255,255,255]);
     this.panorama = new MyPanorama(this, new CGFtexture(this, "images/sky.png"))
-    this.tree = new MyTree(this, [0], 0.5, 4, [39/255,66/255,2/255])
+    this.tree = new MyForest(this, 10, 10)
 
     this.grassAppearance = new CGFappearance(this);
     this.grassAppearance.setDiffuse(1, 1, 1, 1)
@@ -116,7 +116,10 @@ export class MyScene extends CGFscene {
 
     this.popMatrix();
 
+    this.pushMatrix()
+
     this.tree.display();
 
+    this.popMatrix();
   }
 }
