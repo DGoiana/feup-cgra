@@ -1,10 +1,10 @@
-import {CGFappearance, CGFobject} from '../lib/CGF.js';
+import { CGFobject, CGFappearance } from '../../lib/CGF.js';
 import { MyBuildingFloor } from './MyBuildingFloor.js';
 
 export class MyBuilding extends CGFobject {
 	constructor(scene,totalLength,numFloor,numWindow,windowTexture,color = [255,255,255]) {
     super(scene);
-    //this.initBuffers();
+    
     this.numFloor       = numFloor
     this.buildingFloor  = new MyBuildingFloor(this.scene,numWindow,windowTexture,false,false);
     this.baseFloor      = new MyBuildingFloor(this.scene,numWindow,windowTexture,true,false);

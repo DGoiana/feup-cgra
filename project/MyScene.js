@@ -1,7 +1,7 @@
-import { CGFscene, CGFcamera, CGFaxis, CGFtexture, CGFappearance, CGFshader } from "../lib/CGF.js";
-import { MyPlane } from "./MyPlane.js";
-import { MyPanorama } from "./panorama/MyPanorama.js";
-import { MyBuilding } from "./MyBuilding.js";
+import { CGFscene, CGFcamera, CGFaxis, CGFtexture, CGFappearance } from "../lib/CGF.js";
+import { MyPlane } from "./environment/MyPlane.js";
+import { MyPanorama } from "./environment/MyPanorama.js";
+import { MyBuilding } from "./building/MyBuilding.js";
 /**
  * MyScene
  * @constructor
@@ -37,6 +37,7 @@ export class MyScene extends CGFscene {
     this.grassAppearance = new CGFappearance(this);
     this.grassAppearance.setDiffuse(1, 1, 1, 1)
     this.grassAppearance.setTexture(new CGFtexture(this, "images/grass.jpg"))
+
   }
   initLights() {
     this.lights[0].setPosition(200, 200, 200, 1);

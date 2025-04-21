@@ -1,5 +1,5 @@
-import {CGFappearance, CGFobject, CGFtexture} from '../lib/CGF.js';
-import { MyQuad } from '../tp4/MyQuad.js';
+import {CGFappearance, CGFobject, CGFtexture} from '../../lib/CGF.js';
+import { MyQuad } from '../common/MyQuad.js';
 
 export class MyWindow extends CGFobject {
   constructor(scene, windowTexture) {

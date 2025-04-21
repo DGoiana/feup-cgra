@@ -1,6 +1,6 @@
-import {CGFobject} from '../lib/CGF.js';
-import { MyQuad } from '../tp4/MyQuad.js';
+import { CGFobject } from '../../lib/CGF.js';
 import { MyWindow } from './MyWindow.js';
+import { MyQuad } from '../common/MyQuad.js';
 
 export class MyBuildingFloor extends CGFobject {
 	constructor(scene,numWindow,windowTexture, baseFloor = false, topFloor = false) {
