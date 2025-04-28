@@ -1,4 +1,4 @@
-import { CGFobject, CGFappearance } from '../../lib/CGF.js'
+import { CGFobject, CGFappearance, CGFtexture } from '../../lib/CGF.js'
 import { MyPyramid } from '../common/MyPyramid.js'
 import { MyCone } from '../common/MyCone.js'
 
@@ -16,8 +16,8 @@ export class MyTree extends CGFobject {
 		super(scene)
 		this.angle = rotation[0]
 		this.axis = rotation[1]
-		this.baseRadius = baseRadius > 0.9 ? 0.9 : baseRadius // cap radius to 0.9
-		this.height = height > 3.5 ? height : 3.5 // cap lower bound of height to 3.5
+		this.baseRadius = baseRadius
+		this.height = height
 		this.color = color
 
 		this.leaf = new MyPyramid(scene, 8, 8)
@@ -27,22 +27,20 @@ export class MyTree extends CGFobject {
 	}
 
 	initMaterials() {
-		this.stemAppearance = new CGFappearance(this.scene)
-		this.stemAppearance.setAmbient(139 / 255 * 0.8, 69 / 255 * 0.8, 19 / 255 * 0.8, 1);
-		this.stemAppearance.setDiffuse(139 / 255 * 0.6, 69 / 255 * 0.6, 19 / 255 * 0.6, 1);
-		this.stemAppearance.setSpecular(139 / 255 * 0.1, 69 / 255 * 0.1, 19 / 255 * 0.1 , 1);
-		this.stemAppearance.setShininess(5);
+		this.stemTexture = new CGFtexture(this.scene, "textures/wood.jpg");
+		this.stemAppearance = new CGFappearance(this.scene);
+		this.stemAppearance.setTexture(this.stemTexture);
+		this.stemAppearance.setTextureWrap('REPEAT', 'REPEAT');
 
+
+		this.leafTexture = new CGFtexture(this.scene, "textures/leaf.jpg");
 		this.leafAppearance = new CGFappearance(this.scene);
-	    let [r, g, b] = this.color;
-	    this.leafAppearance.setAmbient(r * 0.8, g * 0.8, b * 0.8, 1);
-	    this.leafAppearance.setDiffuse(r * 0.6, g * 0.6, b * 0.6, 1);
-	    this.leafAppearance.setSpecular(r * 0.1, g * 0.1, b * 0.1, 1);
-	    this.leafAppearance.setShininess(5.0);
+		this.leafAppearance.setTexture(this.leafTexture);
+		this.leafAppearance.setTextureWrap('REPEAT', 'REPEAT');
+	  
 	}
 
 	display() {
-
 		this.scene.rotate(this.angle, this.axis ? 1 : 0, 0, this.axis ? 0 : 1)
 
 		this.stemAppearance.apply()
