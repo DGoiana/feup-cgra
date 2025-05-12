@@ -44,12 +44,14 @@ export class MyScene extends CGFscene {
     this.grassAppearance.setTexture(new CGFtexture(this, "images/grass.jpg"))
 
   }
+  
   initLights() {
     this.lights[0].setPosition(200, 200, 200, 1);
     this.lights[0].setDiffuse(1.0, 1.0, 1.0, 1.0);
     this.lights[0].enable();
     this.lights[0].update();
   }
+
   initCameras() {
     this.camera = new CGFcamera(
       1,
@@ -98,6 +100,8 @@ export class MyScene extends CGFscene {
     this.loadIdentity();
     // Apply transformations corresponding to the camera position relative to the origin
     this.applyViewMatrix();
+
+    this.lights[0].update()
 
     // Draw axis
     this.axis.display();
