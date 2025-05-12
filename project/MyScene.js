@@ -3,6 +3,8 @@ import { MyPlane } from "./environment/MyPlane.js";
 import { MyPanorama } from "./environment/MyPanorama.js";
 import { MyBuilding } from "./building/MyBuilding.js";
 import { MyForest } from "./forest/MyForest.js"
+import { MyFire } from "./environment/MyFire.js";
+import { MyTriangle } from "./common/MyTriangle.js";
 
 /**
  * MyScene
@@ -36,6 +38,7 @@ export class MyScene extends CGFscene {
     this.building = new MyBuilding(this, 10, 5, 3, 'images/window.jpg', [255,255,255]);
     this.panorama = new MyPanorama(this, new CGFtexture(this, "images/sky.png"))
     this.tree = new MyForest(this, 10, 10)
+    this.fire = new MyFire(this,10)
 
     this.grassAppearance = new CGFappearance(this);
     this.grassAppearance.setDiffuse(1, 1, 1, 1)
@@ -97,7 +100,7 @@ export class MyScene extends CGFscene {
     this.applyViewMatrix();
 
     // Draw axis
-    // this.axis.display();
+    this.axis.display();
 
     this.setDefaultAppearance();
 
@@ -118,7 +121,8 @@ export class MyScene extends CGFscene {
 
     this.pushMatrix()
 
-    this.tree.display();
+    //this.tree.display();
+    this.fire.display();
 
     this.popMatrix();
   }
