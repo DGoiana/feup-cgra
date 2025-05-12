@@ -20,8 +20,8 @@ export class MyTree extends CGFobject {
 		this.height = height > 3.5 ? height : 3.5 // cap lower bound of height to 3.5
 		this.color = color
 
-		this.leaf = new MyPyramid(scene, 8, 8)
-		this.stem = new MyCone(scene, 30, 30, this.height, this.baseRadius)
+		this.leaf = new MyPyramid(scene, 8, 2)
+		this.stem = new MyCone(scene, 8, 1, this.height, this.baseRadius)
 	
 		this.initMaterials()
 	}
