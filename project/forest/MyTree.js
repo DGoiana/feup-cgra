@@ -21,7 +21,7 @@ export class MyTree extends CGFobject {
 		this.color = color
 
 		this.leaf = new MyPyramid(scene, 8, 2)
-		this.stem = new MyCone(scene, 8, 1, this.height, this.baseRadius)
+		this.stem = new MyCone(scene, 8 , 1, this.height, this.baseRadius)
 	
 		this.initMaterials()
 	}
