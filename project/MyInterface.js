@@ -17,6 +17,8 @@ export class MyInterface extends CGFinterface {
         // https://github.com/dataarts/dat.gui/blob/master/API.md
         this.gui = new dat.GUI();
 
+        this.gui.add(this.scene, 'speedFactor', 0.1, 3).name('Speed Factor');
+
         this.initKeys();
 
         return true;

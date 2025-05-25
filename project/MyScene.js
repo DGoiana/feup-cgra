@@ -4,6 +4,7 @@ import { MyPanorama } from "./environment/MyPanorama.js";
 import { MyForest } from "./forest/MyForest.js"
 import { MyWater } from "./environment/MyWater.js";
 import { MyBuilding } from './building/MyBuilding.js'
+import { MyHeli } from "./helicopter/MyHeli.js";
 
 /**
  * MyScene
@@ -19,30 +20,31 @@ export class MyScene extends CGFscene {
     this.initCameras();
     this.initLights();
 
-    //Background color
     this.gl.clearColor(0, 0, 0, 1.0);
-
     this.gl.clearDepth(100.0);
     this.gl.enable(this.gl.DEPTH_TEST);
     this.gl.enable(this.gl.CULL_FACE);
     this.gl.depthFunc(this.gl.LEQUAL);
 
+    this.speedFactor = 0.1
+
     this.enableTextures(true);
 
     this.setUpdatePeriod(50);
 
-    //Initialize scene objects
+    this.appStartTime = Date.now();
+
     this.axis = new CGFaxis(this, 20, 1);
     this.plane = new MyPlane(this, 64);
-    this.building = new MyBuilding(this, 10, 5, 2, 'images/window.png', [255,255,255]);
-    this.panorama = new MyPanorama(this, new CGFtexture(this, "images/sky.png"))
-    this.tree = new MyForest(this, 10, 20)
-    this.water = new MyWater(this,20,20)
+    this.building = new MyBuilding(this, 10, 5, 3, 'images/window.jpg', [255,255,255]);
+    this.panorama = new MyPanorama(this, new CGFtexture(this, "images/sky.png"));
+    this.tree = new MyForest(this, 5, 5);
+    this.heli = new MyHeli(this);
+    this.water = new MyWater(this, 20, 20)
 
     this.grassAppearance = new CGFappearance(this);
-    this.grassAppearance.setDiffuse(1, 1, 1, 1)
-    this.grassAppearance.setTexture(new CGFtexture(this, "images/grass.jpg"))
-
+    this.grassAppearance.setDiffuse(1, 1, 1, 1);
+    this.grassAppearance.setTexture(new CGFtexture(this, "images/grass.jpg"));
   }
   
   initLights() {
@@ -60,27 +62,17 @@ export class MyScene extends CGFscene {
       vec3.fromValues(25, 50, 25),
       vec3.fromValues(0, 0, 0)
     );
-  }
+  }  
+  
   checkKeys() {
-    var text = "Keys pressed: ";
-    var keysPressed = false;
-
-    // Check for key codes e.g. in https://keycode.info/
-    if (this.gui.isKeyPressed("KeyW")) {
-      text += " W ";
-      keysPressed = true;
-    }
-
-    if (this.gui.isKeyPressed("KeyS")) {
-      text += " S ";
-      keysPressed = true;
-    }
-    if (keysPressed)
-      console.log(text);
+    
   }
-
   update(t) {
-    this.checkKeys();
+    let appStartTime = (t - this.appStartTime) / 1000.0
+    
+    if (this.heli) {
+      this.heli.update(appStartTime);
+    }
   }
 
   setDefaultAppearance() {
@@ -109,31 +101,36 @@ export class MyScene extends CGFscene {
     this.setDefaultAppearance();
 
     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
-    this.panorama.display()
-
-
-    const distance = 20
-
-    this.pushMatrix();
-    this.translate(-2*distance,0,distance);
-    this.water.display();
-    this.popMatrix();
-
-    this.pushMatrix();
-    this.translate(1.5 * distance,0,-2 * distance);
-    this.tree.display();
-    this.popMatrix();
-
-    this.pushMatrix();
-    this.building.display();
-    this.popMatrix();
+    // this.building.display();
+    this.panorama.display();
 
     this.pushMatrix()
-    this.grassAppearance.apply()
-    this.scale(500, 1, 500);
-    this.rotate(-Math.PI / 2, 1, 0, 0);
-    this.plane.display();
+      const distance = 20    
+      this.translate(-2*distance,0,distance);
+      this.water.display();
     this.popMatrix();
 
+
+    this.pushMatrix();
+    
+      this.grassAppearance.apply();
+      this.scale(500, 1, 500);
+      this.rotate(-Math.PI / 2, 1, 0, 0);
+      this.plane.display();
+
+    this.popMatrix();
+
+    this.pushMatrix();
+      // this.tree.display();
+    this.popMatrix();   
+    
+    this.pushMatrix();
+      this.heli.display();
+    this.popMatrix();
+
+    this.pushMatrix();
+      this.translate(0, 0, -20);
+      this.building.display();
+    this.popMatrix();
   }
 }
