@@ -70,7 +70,7 @@ export class MyBuildingFloor extends CGFobject {
     } else {
       for(let i = 0; i < this.numWindow; i++ ) {
         const window = this.windows.at(i)
-        const windowZOffset = 1.005 // .01 to avoid flickering
+        const windowZOffset = 1.005 // .005 to avoid flickering
         const windowXOffset = -.5 * (1 + 1/this.numWindow)
         this.scene.pushMatrix();
         this.scene.translate(windowXOffset + (1 / ( this.numWindow) * (i+1)),0,windowZOffset);
