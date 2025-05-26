@@ -39,10 +39,9 @@ export class MyScene extends CGFscene {
     this.plane = new MyPlane(this, 64);
     this.building = new MyBuilding(this, 10, 5, 3, 'images/window.png', [255,255,255]);
     this.panorama = new MyPanorama(this, new CGFtexture(this, "images/sky.png"));
-    this.tree = new MyForest(this, 5, 5);
+    this.forest = new MyForest(this, 10, 10);
     this.heli = new MyHeli(this);
     this.water = new MyWater(this, 20, 20)
-    this.fire = new MyFire(this, 2)
 
     this.grassAppearance = new CGFappearance(this);
     this.grassAppearance.setDiffuse(1, 1, 1, 1);
@@ -113,21 +112,18 @@ export class MyScene extends CGFscene {
     this.popMatrix();
 
 
-    this.pushMatrix()
-      this.fire.display()
-    this.popMatrix()
 
     this.pushMatrix();
     
-      this.grassAppearance.apply();
-      this.scale(500, 1, 500);
-      this.rotate(-Math.PI / 2, 1, 0, 0);
-      this.plane.display();
+    this.grassAppearance.apply();
+    this.scale(500, 1, 500);
+    this.rotate(-Math.PI / 2, 1, 0, 0);
+    this.plane.display();
 
     this.popMatrix();
 
     this.pushMatrix();
-      this.tree.display();
+      this.forest.display();
     this.popMatrix();   
     
     this.pushMatrix();

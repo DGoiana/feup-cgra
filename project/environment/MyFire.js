@@ -1,46 +1,32 @@
-import { CGFobject, CGFappearance } from "../../lib/CGF.js";
-import { MyTriangle } from "../common/MyTriangle.js";
+import { CGFobject, CGFappearance, CGFtexture } from "../../lib/CGF.js";
+import { MyFlame } from "./MyFlame.js";
 
 export class MyFire extends CGFobject {
   constructor(scene,scale) {
     super(scene)
 
-    this.triangle = new MyTriangle(scene)
     this.scale = scale
+    this.flame = new MyFlame(this.scene,this.scale)
+    this.rotatedFlame = new MyFlame(this.scene,this.scale)
 
-    const [r,g,b] = [217, 37, 61]
-    this.colorMaterial = new CGFappearance(this.scene);
-    this.colorMaterial.setAmbient(r/255 * 0.5,g/255 * 0.5,b/255 * 0.5, 1);
-    this.colorMaterial.setDiffuse(r/255 * 0.5,g/255 * 0.5,b/255 * 0.5, 1);
-    this.colorMaterial.setDiffuse(r/255 * 0.5,g/255 * 0.5,b/255 * 0.5, 1);
-    this.colorMaterial.setShininess(20.0);
+    this.fireAppearance = new CGFappearance(scene);
 
-    this.smallerFireScale = 0.6
+    this.fireTexture = new CGFtexture(scene, "images/fire.png");
+    this.fireAppearance.setTexture(this.fireTexture);
+    this.fireAppearance.setTextureWrap('REPEAT', 'REPEAT');
   }
 
   display() {
-    this.scene.pushMatrix();
-    this.colorMaterial.apply();
-    this.scene.scale(this.scale, 2 * this.scale,this.scale)
-    this.scene.rotate(- 3 * Math.PI / 4, 0, 0, 1);
-    this.triangle.display();
-    this.scene.popMatrix();
+    this.scene.pushMatrix()    
+    this.fireAppearance.apply()
+    this.flame.display()
+    this.scene.popMatrix()
 
-    this.scene.pushMatrix();
-    this.colorMaterial.apply();
-    this.scene.scale(this.scale * this.smallerFireScale, 2 * this.smallerFireScale * this.scale,this.scale * this.smallerFireScale)
-    this.scene.translate(this.scale * 0.15,0,0)
-    this.scene.rotate(- 3 * Math.PI / 4, 0, 0, 1);
-    this.triangle.display();
-    this.scene.popMatrix();
-
-    this.scene.pushMatrix();
-    this.colorMaterial.apply();
-    this.scene.scale(this.scale * this.smallerFireScale, 2 * this.smallerFireScale * this.scale,this.scale * this.smallerFireScale)
-    this.scene.translate(-this.scale * 0.15,0,0)
-    this.scene.rotate(- 3 * Math.PI / 4, 0, 0, 1);
-    this.triangle.display();
-    this.scene.popMatrix();
+    this.scene.pushMatrix()    
+    this.fireAppearance.apply()
+    this.scene.rotate(Math.PI / 2,0,1,0)
+    this.rotatedFlame.display()
+    this.scene.popMatrix()
   }
 
 }
