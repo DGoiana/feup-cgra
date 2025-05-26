@@ -5,13 +5,14 @@ import { CGFobject } from "../../lib/CGF.js";
  * @param scene - Reference to MyScene object
  */
 export class MyCilinder extends CGFobject {
-  constructor(scene, slices, stacks, radius = 1, height = 1, withBase = false) {
+  constructor(scene, slices, stacks, radius = 1, height = 1, withBase = false, withTopBase = false) {
     super(scene);
     this.slices = slices;
     this.stacks = stacks;
     this.radius = radius;
     this.height = height;
     this.withBase = withBase;
+    this.withTopBase = withTopBase;
     this.initBuffers();
   }
 
@@ -71,6 +72,38 @@ export class MyCilinder extends CGFobject {
           bottomCenterIndex,
           bottomCenterIndex + 1 + nextIndex,
           bottomCenterIndex + 1 + i
+        );
+      }
+
+      for (let i = 0; i < this.slices; i++) {
+        const nextIndex = (i + 1) % this.slices;
+        this.indices.push(
+          bottomCenterIndex,
+          bottomCenterIndex + 1 + i,
+          bottomCenterIndex + 1 + nextIndex
+        );
+      }
+    }
+
+    if(this.withTopBase) {
+      this.vertices.push(0, 0, this.height)
+      this.normals.push(0, 0, 1);
+
+      const wallVertexCount = this.vertices.length / 3;
+      const topCenterIndex = wallVertexCount - 1;
+
+      for(let i = 0; i < this.slices; i++) {
+        const angle = i * alpha;
+        this.vertices.push(this.radius * Math.cos(angle), this.radius * Math.sin(angle), this.height);
+        this.normals.push(0, 0, 1);
+      }
+
+      for (let i = 0; i < this.slices; i++) {
+        const nextIndex = (i + 1) % this.slices;
+        this.indices.push(
+          topCenterIndex,
+          topCenterIndex + 1 + i,
+          topCenterIndex + 1 + nextIndex
         );
       }
     }
