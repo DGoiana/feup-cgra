@@ -1,6 +1,11 @@
 import { MyDisk } from "../common/MyDisk.js";
 import { CGFobject,CGFappearance,CGFtexture } from "../../lib/CGF.js";
 
+const LAKE_CENTER = {
+	x: -40,
+	z: 40
+}
+
 export class MyWater extends CGFobject {
   constructor(scene, radius, slices) {
     super(scene);
@@ -13,14 +18,23 @@ export class MyWater extends CGFobject {
     this.waterAppearance.setTextureWrap('REPEAT', 'REPEAT');
   }
 
+  isOverLake(x, z) {
+    const dx = x - LAKE_CENTER.x
+    const dz = z - LAKE_CENTER.z
+    
+    console.log(Math.hypot(dx, dz))
+
+    return Math.hypot(dx, dz) <= this.disk.radius
+  }
+
   display() {
     const angle = -90 * (Math.PI / 180)
 
     this.scene.pushMatrix();
-    this.waterAppearance.apply()
-    this.scene.translate(0, .05, 0)
-    this.scene.rotate(angle, 1, 0, 0)
-    this.disk.display();
+      this.waterAppearance.apply()
+      this.scene.translate(0, .05, 0)
+      this.scene.rotate(angle, 1, 0, 0)
+      this.disk.display();
     this.scene.popMatrix();
   }
 }
