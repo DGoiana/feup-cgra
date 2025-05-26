@@ -97,7 +97,7 @@ export class MyScene extends CGFscene {
     this.lights[0].update()
 
     // Draw axis
-    this.axis.display();
+    // this.axis.display();
 
     this.setDefaultAppearance();
 
@@ -105,24 +105,22 @@ export class MyScene extends CGFscene {
     // this.building.display();
     this.panorama.display();
 
-    this.pushMatrix()
-      const distance = 20    
-      this.translate(-2*distance,0,distance);
+    const distance = 20
+
+    this.pushMatrix()    
+      this.translate(-2*distance,0,2*distance);
       this.water.display();
     this.popMatrix();
 
-
-
     this.pushMatrix();
-    
-    this.grassAppearance.apply();
-    this.scale(500, 1, 500);
-    this.rotate(-Math.PI / 2, 1, 0, 0);
-    this.plane.display();
-
+      this.grassAppearance.apply();
+      this.scale(500, 1, 500);
+      this.rotate(-Math.PI / 2, 1, 0, 0);
+      this.plane.display();
     this.popMatrix();
 
     this.pushMatrix();
+      this.translate(distance, 0, distance);
       this.forest.display();
     this.popMatrix();   
     

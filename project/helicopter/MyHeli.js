@@ -16,6 +16,9 @@ const STATES = {
 	CRUISING: 1,
 	ASCENDING: 2,
 	LANDING: 3,
+	DESCENDING: 4,
+	FILLING: 5,
+	EXTINGUISHING: 6
 }
 
 const LANDING_PHASES = {
@@ -47,7 +50,8 @@ export class MyHeli extends CGFobject {
 		this.verticalLandingTube = new MyCilinder(scene, 10, 10, 0.01, 0.5)
 		this.horizontalLandingTube = new MyCilinder(scene, 10, 10, 0.02, 1.4)
 
-		this.bucket = new MyBucket(scene)
+		this.bucket = new MyBucket(scene, 0.2, 0.3, true, false)
+		this.water = new MyBucket(scene, 0.15, 0.2, true, true)
 		this.rope = new MyCilinder(scene, 5, 5, 0.01, 1)
 		
 		this.mainRotorAngle = 0
@@ -77,7 +81,15 @@ export class MyHeli extends CGFobject {
 			y: -.25,
 			z: 0
 		}
+
+		this.waterPosition = {
+			x: 0,
+			y: 0,
+			z: 0
+		}
+
 		this.showingRope = false
+		this.bucketFilled = false
 	
 		this.landingPhase = null
 		
@@ -109,6 +121,12 @@ export class MyHeli extends CGFobject {
 		this.tailMaterial.setDiffuse(0.6, 0.6, 0.6, 1.0)
 		this.tailMaterial.setSpecular(0.3, 0.3, 0.3, 1.0)
 		this.tailMaterial.setShininess(30)
+
+		this.waterMaterial = new CGFappearance(this.scene)
+		this.waterMaterial.setAmbient(0.05, 0.05, 0.9, 1.0)
+		this.waterMaterial.setDiffuse(0.05, 0.05, 0.9, 1.0)
+		this.waterMaterial.setSpecular(0.05, 0.05, 0.9, 1.0)
+		this.waterMaterial.setShininess(30)
 	}
 
 	turn(v) {
@@ -144,6 +162,8 @@ export class MyHeli extends CGFobject {
 		this.orientation = 0
 		this.state = STATES.IDLE
 		this.landingPhase = null
+		this.bucketFilled = false
+		this.showingRope = false
 	}
 
 	toggleCruise() {
@@ -154,6 +174,11 @@ export class MyHeli extends CGFobject {
 			this.velocity.y = 2
 			this.state = STATES.ASCENDING
 		}
+	}
+
+	getWater() {
+		this.state = STATES.DESCENDING
+		this.velocity.y = -5
 	}
 
 	startLanding() {
@@ -215,6 +240,10 @@ export class MyHeli extends CGFobject {
 		}
 	}
 	
+	clearFire() {
+		this.state = STATES.EXTINGUISHING
+	}
+	
 	checkKeys() {
 		if (this.scene.gui.isKeyPressed("KeyW")) {
 			this.accelerate(0.05);
@@ -241,8 +270,16 @@ export class MyHeli extends CGFobject {
 			this.toggleCruise()
 		}
 
-		if (this.scene.gui.isKeyPressed("KeyL") && this.state != STATES.LANDING) {
-			this.startLanding()
+		if (this.scene.gui.isKeyPressed("KeyO") && this.bucketFilled && this.scene.forest.isOverForest(this.position.x, this.position.z)) {
+			this.clearFire()
+		}
+
+		if (this.scene.gui.isKeyPressed("KeyL") && this.state != STATES.LANDING && this.state != STATES.DESCENDING) {
+			if(this.scene.water.isOverLake(this.position.x, this.position.z) && !this.bucketFilled) {
+				this.getWater()
+			} else {
+				this.startLanding()
+			}
 		}
 	}
 	
@@ -263,7 +300,7 @@ export class MyHeli extends CGFobject {
 					this.toggleCruise()
 				}
 
-				if (this.position.y >= BUCKET_ALTITUDE && this.position.y < CRUISING_ALTITUDE - 4) {
+				if (this.position.y >= BUCKET_ALTITUDE && this.position.y < CRUISING_ALTITUDE - 4 && !this.bucketFilled) {
 					this.showingRope = true
 					this.bucketPosition.y -= 0.1
 				}
@@ -279,7 +316,23 @@ export class MyHeli extends CGFobject {
 					this.showingRope = false
 				}
 				break
+			case STATES.DESCENDING:
+				if (this.position.y <= 1) {
+					this.bucketFilled = true
+					this.state = STATES.IDLE
+				}
+				break
+			case STATES.EXTINGUISHING:
+				if (this.waterPosition.y <= 1) {
+					this.bucketFilled = false
+					this.state = STATES.CRUISING
+					this.scene.forest.fires = []
+				} else {
+					this.waterPosition.y -= -1
+				}
+				break
 			case STATES.IDLE:
+				this.velocity = {x: 0, y: 0, z: 0}
 				break
 		}
 
@@ -291,6 +344,9 @@ export class MyHeli extends CGFobject {
 		this.position.x += this.velocity.x * delta_t;
 		this.position.y += this.velocity.y * delta_t;
 		this.position.z += this.velocity.z * delta_t;
+		
+		console.log(this.position.x, this.position.z)
+		console.log(this.scene.forest.isOverForest(this.position.x, this.position.z))
 	}
 
 	drawMainRotor() {
@@ -400,11 +456,17 @@ export class MyHeli extends CGFobject {
 			this.scene.translate(this.position.x, this.position.y, this.position.z)
 
 			this.scene.pushMatrix()
-				this.scene.translate(this.bucketPosition.x, this.bucketPosition.y, this.bucketPosition.z) // top of the building
+				this.scene.translate(this.bucketPosition.x, this.bucketPosition.y, this.bucketPosition.z)
 				this.scene.rotate(Math.PI / 2, 1, 0, 0)
 				this.scene.rotate(Math.PI, 1, 0, 0)
 				this.bucket.display()
 				if(this.showingRope) this.rope.display()
+
+				if(this.bucketFilled){
+					this.waterMaterial.apply()
+					this.scene.translate(this.waterPosition.x, this.waterPosition.y, this.waterPosition.z)
+					this.water.display()
+				} 
 			this.scene.popMatrix()
 
 			this.scene.rotate(this.orientation, 0, 1, 0)

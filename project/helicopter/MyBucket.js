@@ -2,10 +2,10 @@ import { CGFobject, CGFappearance, CGFtexture } from '../../lib/CGF.js'
 import { MyCilinder } from '../common/MyCilinder.js'
 
 export class MyBucket extends CGFobject {
-	constructor(scene) {
+	constructor(scene, radius, height, baseBottom, baseTop) {
 		super(scene)
 
-		this.body = new MyCilinder(scene, 10, 10, 0.2, 0.3, true)
+		this.body = new MyCilinder(scene, 10, 10, radius, height, baseBottom, baseTop)
 	}
 
 	display() {
