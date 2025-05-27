@@ -5,6 +5,7 @@ import { Sphere } from '../common/Sphere.js'
 import { MyEllipsoid } from '../common/MyEllipsoid.js'
 import { MyCilinder } from '../common/MyCilinder.js'
 import { MyBucket } from './MyBucket.js'
+import { MyWaterDropletSystem } from './MyWaterDroplet.js'
 
 const MAIN_ROTOR_SPEED = 4
 const TAIL_ROTOR_SPEED = 10
@@ -53,6 +54,8 @@ export class MyHeli extends CGFobject {
 		this.bucket = new MyBucket(scene, 0.2, 0.3, true, false)
 		this.water = new MyBucket(scene, 0.15, 0.2, true, true)
 		this.rope = new MyCilinder(scene, 5, 5, 0.01, 1)
+		
+		this.waterDropletSystem = new MyWaterDropletSystem(scene)
 		
 		this.mainRotorAngle = 0
 		this.tailRotorAngle = 0
@@ -164,6 +167,7 @@ export class MyHeli extends CGFobject {
 		this.landingPhase = null
 		this.bucketFilled = false
 		this.showingRope = false
+		this.waterDropletSystem.clearAllDroplets()
 	}
 
 	toggleCruise() {
@@ -242,6 +246,7 @@ export class MyHeli extends CGFobject {
 	
 	clearFire() {
 		this.state = STATES.EXTINGUISHING
+		this.waterDropletSystem.startDropping(this.position, this.velocity)
 	}
 	
 	checkKeys() {
@@ -265,8 +270,7 @@ export class MyHeli extends CGFobject {
 			this.rest();
 		}
 
-		if (this.scene.gui.isKeyPressed("KeyP") && !this.cruising) {
-			this.idle = false
+		if (this.scene.gui.isKeyPressed("KeyP")) {
 			this.toggleCruise()
 		}
 
@@ -323,12 +327,18 @@ export class MyHeli extends CGFobject {
 				}
 				break
 			case STATES.EXTINGUISHING:
-				if (this.waterPosition.y <= 1) {
+				if (this.waterDropletSystem.getActiveDropletCount() === 0 && !this.waterDropletSystem.isDropping) {
 					this.bucketFilled = false
 					this.state = STATES.CRUISING
-					this.scene.forest.fires = []
-				} else {
-					this.waterPosition.y -= -1
+				}
+			
+				if (this.waterDropletSystem.isDropping) {
+					if (!this.dropStartTime) {
+						this.dropStartTime = currentTime
+					} else if (currentTime - this.dropStartTime > 2.0) {
+						this.waterDropletSystem.stopDropping()
+						this.dropStartTime = null
+					}
 				}
 				break
 			case STATES.IDLE:
@@ -341,12 +351,17 @@ export class MyHeli extends CGFobject {
 			this.tailRotorAngle += TAIL_ROTOR_SPEED * delta_t;
 		}
 
+		this.waterDropletSystem.update(delta_t, currentTime, this.position, this.velocity)
+		
+		if (this.scene.forest && this.waterDropletSystem.getActiveDropletCount() > 0) {
+			this.waterDropletSystem.checkFireCollisions(this.scene.forest)
+		}
+
 		this.position.x += this.velocity.x * delta_t;
 		this.position.y += this.velocity.y * delta_t;
 		this.position.z += this.velocity.z * delta_t;
-		
-		console.log(this.position.x, this.position.z)
-		console.log(this.scene.forest.isOverForest(this.position.x, this.position.z))
+
+		console.log(this.scene.forest.isOverForest(this.position.x, this.position.z));
 	}
 
 	drawMainRotor() {
@@ -489,5 +504,7 @@ export class MyHeli extends CGFobject {
 			this.drawLandingGear()
 	
 		this.scene.popMatrix()
+		
+		this.waterDropletSystem.display()
 	}
 }
