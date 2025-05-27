@@ -1,5 +1,4 @@
 import { CGFobject, CGFappearance, CGFtexture } from '../../lib/CGF.js'
-import { MyCone } from '../common/MyCone.js'
 import { MyQuad } from '../common/MyQuad.js'
 import { Sphere } from '../common/Sphere.js'
 import { MyEllipsoid } from '../common/MyEllipsoid.js'
@@ -34,9 +33,9 @@ const LANDING_PHASES = {
  * @param {CGFscene} scene
 */
 export class MyHeli extends CGFobject {
-	constructor(scene, pos = [0, 30.75, -14], startTime = 0) {
+	constructor(scene, pos = [0, 32.25, -14], startTime = 0, scale = 3) {
 		super(scene)
-				
+
 		this.body = new MyEllipsoid(scene, 20, 20, 0.5, 0.5, 1.5)
 
 		this.tail = new MyCilinder(scene, 10, 10, 0.05, 0.5)
@@ -54,20 +53,22 @@ export class MyHeli extends CGFobject {
 		this.bucket = new MyBucket(scene, 0.2, 0.3, true, false)
 		this.water = new MyBucket(scene, 0.15, 0.2, true, true)
 		this.rope = new MyCilinder(scene, 5, 5, 0.01, 1)
-		
+
 		this.waterDropletSystem = new MyWaterDropletSystem(scene)
-		
+
 		this.mainRotorAngle = 0
 		this.tailRotorAngle = 0
-	
+
 		this.position = {
 			x: pos[0],
 			y: pos[1],
 			z: pos[2]
 		}
 
+    this.scale = scale;
+
 		this.state = STATES.IDLE
-		
+
 		this.velocity = {
 			x: 0,
 			y: 0,
@@ -75,7 +76,7 @@ export class MyHeli extends CGFobject {
 		}
 
 		this.orientation = 0
-		
+
 		this.startTime = startTime
 		this.lastFrame = null
 
@@ -93,14 +94,14 @@ export class MyHeli extends CGFobject {
 
 		this.showingRope = false
 		this.bucketFilled = false
-	
+
 		this.landingPhase = null
-		
+
 		this.initMaterials()
 	}
 
 	initMaterials() {
-		
+
 		this.bodyMaterial = new CGFappearance(this.scene)
 		this.bodyMaterial.setAmbient(0.2, 0.2, 0.2, 1.0)
 		this.bodyMaterial.setDiffuse(0.7, 0.7, 0.7, 1.0)
@@ -118,7 +119,7 @@ export class MyHeli extends CGFobject {
 		this.rotorMaterial.setDiffuse(0.3, 0.3, 0.3, 1.0)
 		this.rotorMaterial.setSpecular(0.8, 0.8, 0.8, 1.0)
 		this.rotorMaterial.setShininess(80)
-		
+
 		this.tailMaterial = new CGFappearance(this.scene)
 		this.tailMaterial.setAmbient(0.2, 0.2, 0.2, 1.0)
 		this.tailMaterial.setDiffuse(0.6, 0.6, 0.6, 1.0)
@@ -134,9 +135,9 @@ export class MyHeli extends CGFobject {
 
 	turn(v) {
 		this.orientation += v;
-		
+
 		const speed = Math.sqrt(this.velocity.x * this.velocity.x + this.velocity.z * this.velocity.z);
-		
+
 		if (speed > 0) {
 			this.velocity.x = Math.sin(this.orientation) * speed;
 			this.velocity.z = Math.cos(this.orientation) * speed;
@@ -145,9 +146,9 @@ export class MyHeli extends CGFobject {
 
 	accelerate(v) {
 		const currentSpeed = Math.sqrt(this.velocity.x * this.velocity.x + this.velocity.z * this.velocity.z);
-		
+
 		const newSpeed = Math.max(0, currentSpeed + v);
-		
+
 		if (currentSpeed > 0) {
 			const ratio = newSpeed / currentSpeed;
 			this.velocity.x *= ratio;
@@ -159,7 +160,7 @@ export class MyHeli extends CGFobject {
 	}
 
 	rest() {
-		this.position = {x: 0, y: 30.75, z: -14}
+		this.position = {x: 0, y: 32.25, z: -14}
 		this.bucketPosition = {x: 0, y: -.25, z: 0}
 		this.velocity = {x: 0, y: 0, z: 0}
 		this.orientation = 0
@@ -187,7 +188,7 @@ export class MyHeli extends CGFobject {
 
 	startLanding() {
 		if(this.state == STATES.IDLE) return
-		
+
 		this.state = STATES.LANDING
 		this.landingPhase = LANDING_PHASES.NAVIGATING
 	}
@@ -205,7 +206,7 @@ export class MyHeli extends CGFobject {
 		const dz = -14 - this.position.z
 		const dy = CRUISING_ALTITUDE - this.position.y
 
-		const horizontalDistance = Math.sqrt(dx * dx + dz * dz)
+    const horizontalDistance = Math.hypot(dx, dz);
 
 		if (Math.abs(dy) > 1.0) {
 			this.velocity = {x: 0, y: 2, z: 0}
@@ -213,42 +214,42 @@ export class MyHeli extends CGFobject {
 		else if (horizontalDistance > 1.0) {
 			const targetAngle = Math.atan2(dx, dz)
 			const angleDiff = targetAngle - this.orientation
-			
+
 			let normalizedAngleDiff = ((angleDiff + Math.PI) % (2 * Math.PI)) - Math.PI
-			
+
 			if (Math.abs(normalizedAngleDiff) > 0.1) {
 				this.accelerate(-0.1)
 				this.turn(Math.sign(normalizedAngleDiff) * 0.05 * delta_t * 60)
 			} else {
 				this.accelerate(0.05)
 			}
-		} 
+		}
 		else {
 			let normalizedOrientation = ((this.orientation + Math.PI) % (2 * Math.PI)) - Math.PI
-			
+
 			if (Math.abs(normalizedOrientation) > 0.1) {
 				this.velocity = {x: 0, y: 0, z: 0}
 				this.turn(-Math.sign(normalizedOrientation) * 0.05 * delta_t * 60)
 			} else {
 				this.landingPhase = LANDING_PHASES.DESCENDING
 				this.velocity = {x: 0, y: -2, z: 0}
-				this.orientation = 0 
+				this.orientation = 0
 			}
 		}
 	}
 
 	handleDescent() {
-		if (this.position.y <= 30.75) {
+		if (this.position.y <= 32.25) {
 			this.rest()
 			this.landingPhase = LANDING_PHASES.LANDED
 		}
 	}
-	
+
 	clearFire() {
 		this.state = STATES.EXTINGUISHING
 		this.waterDropletSystem.startDropping(this.position, this.velocity)
 	}
-	
+
 	checkKeys() {
 		if (this.scene.gui.isKeyPressed("KeyW")) {
 			this.accelerate(0.05);
@@ -257,11 +258,11 @@ export class MyHeli extends CGFobject {
 		if (this.scene.gui.isKeyPressed("KeyS")) {
 			this.accelerate(-0.1);
 		}
-		
+
 		if (this.scene.gui.isKeyPressed("KeyA")) {
 			this.turn(0.05);
 		}
-		
+
 		if (this.scene.gui.isKeyPressed("KeyD")) {
 			this.turn(-0.05);
 		}
@@ -286,16 +287,16 @@ export class MyHeli extends CGFobject {
 			}
 		}
 	}
-	
+
 	update(appStartTime) {
 		let currentTime = appStartTime;
 		let delta_t = 0;
-		
+
 		if (this.lastFrame) {
 			delta_t = currentTime - this.lastFrame;
 		}
 		this.lastFrame = currentTime;
-		
+
 		this.checkKeys();
 
 		switch(this.state) {
@@ -311,7 +312,7 @@ export class MyHeli extends CGFobject {
 				break
 			case STATES.LANDING:
 				this.handleLandingLogic(delta_t)
-				
+
 				if (this.position.y <= CRUISING_ALTITUDE - 4 && this.position.y >= BUCKET_ALTITUDE) {
 					this.bucketPosition.y += 0.1
 				}
@@ -321,7 +322,7 @@ export class MyHeli extends CGFobject {
 				}
 				break
 			case STATES.DESCENDING:
-				if (this.position.y <= 1) {
+				if (this.position.y <= 2.5) {
 					this.bucketFilled = true
 					this.state = STATES.IDLE
 				}
@@ -331,7 +332,7 @@ export class MyHeli extends CGFobject {
 					this.bucketFilled = false
 					this.state = STATES.CRUISING
 				}
-			
+
 				if (this.waterDropletSystem.isDropping) {
 					if (!this.dropStartTime) {
 						this.dropStartTime = currentTime
@@ -352,7 +353,7 @@ export class MyHeli extends CGFobject {
 		}
 
 		this.waterDropletSystem.update(delta_t, currentTime, this.position, this.velocity)
-		
+
 		if (this.scene.forest && this.waterDropletSystem.getActiveDropletCount() > 0) {
 			this.waterDropletSystem.checkFireCollisions(this.scene.forest)
 		}
@@ -371,29 +372,29 @@ export class MyHeli extends CGFobject {
 			this.scene.translate(0, 0.4, 0)
 			this.mainRotorHub.display()
 		this.scene.popMatrix()
-		
+
 		this.scene.pushMatrix()
 
 			this.scene.translate(0, 0.5, 0)
 			this.scene.rotate(this.mainRotorAngle, 0, 1, 0)
-			
+
 			this.scene.pushMatrix()
 				this.scene.scale(3, 0.05, 0.2)
 				this.mainRotorBlade.display()
 			this.scene.popMatrix()
-			
+
 			this.scene.pushMatrix()
 				this.scene.rotate(Math.PI/2, 0, 1, 0)
 				this.scene.scale(3, 0.05, 0.2)
 				this.mainRotorBlade.display()
 			this.scene.popMatrix()
-		
+
 		this.scene.popMatrix()
 	}
 
 	drawTailRotor() {
 		this.rotorMaterial.apply()
-		
+
 		this.scene.pushMatrix()
 			this.scene.translate(0, 0, -2)
 			this.tailRotorHub.display()
@@ -402,7 +403,7 @@ export class MyHeli extends CGFobject {
 		this.scene.pushMatrix()
 			this.scene.translate(0.15, 0, -2)
 			this.scene.rotate(this.tailRotorAngle, 1, 0, 0)
-			
+
 			this.scene.pushMatrix()
 				this.scene.rotate(Math.PI / 2, 0, 0, 1)
 				this.scene.scale(0.5, 0.05, 0.1)
@@ -450,10 +451,10 @@ export class MyHeli extends CGFobject {
 		this.scene.pushMatrix()
 			this.scene.translate(-.25, -.3, -.4)
 			this.scene.rotate(Math.PI / 1.5, 1, 0, 0)
-			this.scene.rotate(-Math.PI / 8, 0, 1, 0)			
+			this.scene.rotate(-Math.PI / 8, 0, 1, 0)
 			this.verticalLandingTube.display()
 		this.scene.popMatrix()
-		
+
 		this.scene.pushMatrix()
 			this.scene.translate(-.45, -.7, -.75)
 			this.horizontalLandingTube.display()
@@ -467,8 +468,9 @@ export class MyHeli extends CGFobject {
 
 	display() {
 		this.scene.pushMatrix()
-		
+
 			this.scene.translate(this.position.x, this.position.y, this.position.z)
+      this.scene.scale(this.scale, this.scale, this.scale)
 
 			this.scene.pushMatrix()
 				this.scene.translate(this.bucketPosition.x, this.bucketPosition.y, this.bucketPosition.z)
@@ -481,30 +483,30 @@ export class MyHeli extends CGFobject {
 					this.waterMaterial.apply()
 					this.scene.translate(this.waterPosition.x, this.waterPosition.y, this.waterPosition.z)
 					this.water.display()
-				} 
+				}
 			this.scene.popMatrix()
 
 			this.scene.rotate(this.orientation, 0, 1, 0)
-			
+
 			this.bodyMaterial.apply()
 			this.scene.pushMatrix()
 				this.scene.scale(1, 0.8, 1)
 				this.body.display()
-			this.scene.popMatrix()	
-				
+			this.scene.popMatrix()
+
 			this.cockpitMaterial.apply()
 			this.scene.pushMatrix()
 				this.scene.translate(0, 0.2, 0.8)
 				this.scene.scale(1, 0.5, 0.5)
 				this.cockpit.display()
 			this.scene.popMatrix()
-			
+
 			this.drawMainRotor()
 			this.drawTail()
 			this.drawLandingGear()
-	
+
 		this.scene.popMatrix()
-		
+
 		this.waterDropletSystem.display()
 	}
 }

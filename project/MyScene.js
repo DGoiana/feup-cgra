@@ -5,7 +5,6 @@ import { MyForest } from "./forest/MyForest.js"
 import { MyWater } from "./environment/MyWater.js";
 import { MyBuilding } from './building/MyBuilding.js'
 import { MyHeli } from "./helicopter/MyHeli.js";
-import { MyFire } from "./environment/MyFire.js";
 
 /**
  * MyScene
@@ -41,13 +40,13 @@ export class MyScene extends CGFscene {
     this.panorama = new MyPanorama(this, new CGFtexture(this, "images/sky.png"));
     this.forest = new MyForest(this, 10, 10);
     this.heli = new MyHeli(this);
-    this.water = new MyWater(this, 20, 20)
+    this.water = new MyWater(this, 30, 20)
 
     this.grassAppearance = new CGFappearance(this);
     this.grassAppearance.setDiffuse(1, 1, 1, 1);
     this.grassAppearance.setTexture(new CGFtexture(this, "images/grass.jpg"));
   }
-  
+
   initLights() {
     this.lights[0].setPosition(200, 200, 200, 1);
     this.lights[0].setDiffuse(1.0, 1.0, 1.0, 1.0);
@@ -63,14 +62,14 @@ export class MyScene extends CGFscene {
       vec3.fromValues(25, 50, 25),
       vec3.fromValues(0, 0, 0)
     );
-  }  
-  
+  }
+
   checkKeys() {
-    
+
   }
   update(t) {
     let appStartTime = (t - this.appStartTime) / 1000.0
-    
+
     if (this.heli) {
       this.heli.update(appStartTime);
     }
@@ -107,7 +106,7 @@ export class MyScene extends CGFscene {
 
     const distance = 20
 
-    this.pushMatrix()    
+    this.pushMatrix()
       this.translate(-2*distance,0,2*distance);
       this.water.display();
     this.popMatrix();
@@ -122,8 +121,8 @@ export class MyScene extends CGFscene {
     this.pushMatrix();
       this.translate(distance, 0, distance);
       this.forest.display();
-    this.popMatrix();   
-    
+    this.popMatrix();
+
     this.pushMatrix();
       this.heli.display();
     this.popMatrix();
