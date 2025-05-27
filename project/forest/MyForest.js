@@ -2,7 +2,7 @@ import { CGFobject } from '../../lib/CGF.js'
 import { MyTree } from './MyTree.js'
 import { MyFire} from '../environment/MyFire.js'
 
-const FOREST_CENTER = {
+export const FOREST_CORNER = {
 	x: 20,
 	z: 20
 }
@@ -21,10 +21,10 @@ export class MyForest extends CGFobject {
 	}
 
 	isOverForest(x, z) {
-		const minX = FOREST_CENTER.x;
-    const maxX = FOREST_CENTER.x + (this.columns * 5);
-    const minZ = FOREST_CENTER.z;
-    const maxZ = FOREST_CENTER.z + (this.rows * 5);
+		const minX = FOREST_CORNER.x;
+    const maxX = FOREST_CORNER.x + (this.columns * 5);
+    const minZ = FOREST_CORNER.z;
+    const maxZ = FOREST_CORNER.z + (this.rows * 5);
 
     return x >= minX && x <= maxX && z >= minZ && z <= maxZ;
 	}
@@ -58,7 +58,7 @@ export class MyForest extends CGFobject {
 					let offset = Math.random() * 5
 					let scale = Math.random() * 2.0
 					let fire = new MyFire(this.scene,scale)
-					this.fires.push([fire,row * 5 + offset, col * 5 + offset])
+					this.fires.push([fire, row * 5 + offset, col * 5 + offset])
 				}
 			}
 		}

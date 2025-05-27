@@ -18,14 +18,14 @@ export class MyFire extends CGFobject {
 
   display() {
     this.scene.pushMatrix()    
-    this.fireAppearance.apply()
-    this.flame.display()
+      this.fireAppearance.apply()
+      this.flame.display()
     this.scene.popMatrix()
 
     this.scene.pushMatrix()    
-    this.fireAppearance.apply()
-    this.scene.rotate(Math.PI / 2,0,1,0)
-    this.rotatedFlame.display()
+      this.fireAppearance.apply()
+      this.scene.rotate(Math.PI / 2,0,1,0)
+      this.rotatedFlame.display()
     this.scene.popMatrix()
   }
 
