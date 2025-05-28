@@ -19,6 +19,8 @@ export class MyInterface extends CGFinterface {
 
         this.gui.add(this.scene, 'speedFactor', 0.1, 3).name('Speed Factor');
 
+        this.gui.add(this.scene, 'cameraMode', ['Free View', 'Helicopter View']).name('Camera Mode');
+
         this.initKeys();
 
         return true;
