@@ -1,6 +1,5 @@
 import { CGFobject, CGFappearance } from '../../lib/CGF.js'
 import { Sphere } from '../common/Sphere.js'
-import { FOREST_CORNER } from '../forest/MyForest.js'
 
 const GRAVITY = -9.8
 
@@ -43,8 +42,8 @@ export class MyDrop extends CGFobject {
     checkCollisionWithFire(firePosition) {
         if (!this.active) return false
 
-        const fireX = FOREST_CORNER.x + firePosition[0]
-        const fireZ = FOREST_CORNER.z + firePosition[2]
+        const fireX = firePosition[0]
+        const fireZ = firePosition[2]
 
         const dx = this.position.x - fireX
         const dz = this.position.z - fireZ

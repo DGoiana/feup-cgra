@@ -33,7 +33,7 @@ const LANDING_PHASES = {
  * @param {CGFscene} scene
 */
 export class MyHeli extends CGFobject {
-	constructor(scene, pos = [0, 32.25, -14], startTime = 0, scale = 3) {
+	constructor(scene, pos = [-110, 32.25, -34], startTime = 0, scale = 3) {
 		super(scene)
 
 		this.body = new MyEllipsoid(scene, 20, 20, 0.5, 0.5, 1.5)
@@ -135,6 +135,18 @@ export class MyHeli extends CGFobject {
 		this.waterMaterial.setShininess(30)
 	}
 
+	isOverLake(x, z) {
+    const lakeCenter = { x: -100, z: 65 };
+    const lakeRadius = 40;
+    
+    const dx = x - lakeCenter.x;
+    const dz = z - lakeCenter.z;
+    
+    const distance = Math.hypot(dx, dz);
+    
+    return distance <= lakeRadius;
+  }
+
 	updateHeliportTexture(texturePath) {
 		if (this.lastHeliportTexture !== texturePath) {
 			this.scene.building.topFloor.heliport.updateTexture(texturePath)
@@ -169,7 +181,7 @@ export class MyHeli extends CGFobject {
 	}
 
 	rest() {
-		this.position = {x: 0, y: 32.25, z: -14}
+		this.position = {x: -110, y: 32.25, z: -34}
 		this.bucketPosition = {x: 0, y: -.25, z: 0}
 		this.velocity = {x: 0, y: 0, z: 0}
 		this.orientation = 0
@@ -215,8 +227,8 @@ export class MyHeli extends CGFobject {
 	}
 
 	handleNavigation(delta_t) {
-		const dx = 0 - this.position.x
-		const dz = -14 - this.position.z
+		const dx = -110 - this.position.x
+		const dz = -34 - this.position.z
 		const dy = CRUISING_ALTITUDE - this.position.y
 
     const horizontalDistance = Math.hypot(dx, dz);
@@ -293,7 +305,7 @@ export class MyHeli extends CGFobject {
 		}
 
 		if (this.scene.gui.isKeyPressed("KeyL") && this.state != STATES.LANDING && this.state != STATES.DESCENDING) {
-			if(this.scene.water.isOverLake(this.position.x, this.position.z) && !this.bucketFilled) {
+			if(this.isOverLake(this.position.x, this.position.z) && !this.bucketFilled) {
 				this.getWater()
 			} else {
 				this.startLanding()

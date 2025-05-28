@@ -3,8 +3,8 @@ import { MyTree } from './MyTree.js'
 import { MyFire} from '../environment/MyFire.js'
 
 export const FOREST_CORNER = {
-	x: 20,
-	z: 20
+	x: -160,
+	z: 25
 }
 
 export class MyForest extends CGFobject {
@@ -29,24 +29,45 @@ export class MyForest extends CGFobject {
     return x >= minX && x <= maxX && z >= minZ && z <= maxZ;
 	}
 
+	isOverLake(x, z) {
+		const lakeCenter = { x: -105, z: 60 };
+		const lakeRadius = 50;
+		
+		const dx = x - lakeCenter.x;
+		const dz = z - lakeCenter.z;
+		
+		const distance = Math.hypot(dx, dz);
+		
+		return distance <= lakeRadius;
+	}
+
 	generateForest() {
 		for(let row = 0; row < this.rows; row++) {
 			for(let col = 0; col < this.columns; col++) {
 
-				let offset = Math.random() * 5
+				let offset = Math.random() * 20
+
+				let treeX = FOREST_CORNER.x + row * 5 + offset
+				let treeZ = FOREST_CORNER.z + col * 5 + offset
+
+				if (this.isOverLake(treeX, treeZ) || treeZ <= 40) {
+					continue
+				}
 
 				let height = Math.random() * (7.5 - 3.5) + 3.5;
 				let radius = Math.random() * (0.9 - 0.3) + 0.3;
+
 				let color = [
 				    Math.random() * 0.2,
 				    0.5 + Math.random() * 0.5,
 				    Math.random() * 0.2
 				];
+
 				let rotation = [Math.random() * (Math.PI / 10), Math.random() < 0.5 ? 0 : 1]
 
 				let tree = new MyTree(this.scene, rotation, radius, height, color)
 
-				this.trees.push([tree, row * 5 + offset, col * 5 + offset])
+				this.trees.push([tree, treeX, treeZ])
 			}
 		}
 	}
@@ -54,11 +75,19 @@ export class MyForest extends CGFobject {
 	generateFire() {
 		for(let row = 0; row < this.rows; row++) {
 			for(let col = 0; col < this.columns; col++) {
-				if(Math.random() < .5) {
-					let offset = Math.random() * 5
+				if(Math.random() < .3) {
+					let offset = Math.random() * 20
+
+					let fireX = FOREST_CORNER.x + row * 5 + offset
+					let fireZ = FOREST_CORNER.z + col * 5 + offset
+
+					if (this.isOverLake(fireX, fireZ) || fireZ <= 40) {
+						continue
+					}
+
 					let scale = Math.random() * 2.0
 					let fire = new MyFire(this.scene, scale)
-					this.fires.push([fire, row * 5 + offset, col * 5 + offset])
+					this.fires.push([fire, fireX, fireZ])
 				}
 			}
 		}
