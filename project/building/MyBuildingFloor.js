@@ -1,6 +1,7 @@
 import { CGFobject } from '../../lib/CGF.js';
 import { MyWindow } from './MyWindow.js';
 import { MyQuad } from '../common/MyQuad.js';
+import { MyLight } from './MyLight.js';
 
 export class MyBuildingFloor extends CGFobject {
 	constructor(scene, numWindow, windowTexture, baseFloor = false, topFloor = false, ) {
@@ -20,10 +21,20 @@ export class MyBuildingFloor extends CGFobject {
 
     this.heliport = new MyWindow(scene, this.heliportImagePath);
     this.entrance = new MyWindow(scene,'images/entrance.jpg');
+
+    this.lights = [
+      new MyLight(scene), // corner 1 
+      new MyLight(scene), // corner 2
+      new MyLight(scene), // corner 3
+      new MyLight(scene)  // corner 4
+    ]
   }
 
-  update() {
-
+  update(t) {
+    
+    for (let light of this.lights) {
+      light.update(t);
+    }
   }
 
 	display() {
@@ -92,9 +103,27 @@ export class MyBuildingFloor extends CGFobject {
       const angle = -90 * (Math.PI / 180)
       const yOffset = .505 // .01 to avoid flickering
       this.scene.pushMatrix();
-      this.scene.translate(0,yOffset,.5);
-      this.scene.rotate(angle,1,0,0);
-      this.heliport.display();
+        this.scene.translate(0,yOffset,.5);
+        this.scene.rotate(angle,1,0,0);
+        this.heliport.display();
+        
+        const cornerOffset = .4;
+        
+        const cornerPositions = [
+          [-cornerOffset, 0.05, -cornerOffset], // top-left
+          [cornerOffset, 0.05, -cornerOffset],  // top-right
+          [-cornerOffset, 0.05, cornerOffset],  // bottom-left
+          [cornerOffset, 0.05, cornerOffset]    // bottom-right
+        ];
+        
+        this.scene.rotate(-angle,1,0,0);
+
+        for (let i = 0; i < this.lights.length; i++) {
+          this.scene.pushMatrix();
+          this.scene.translate(cornerPositions[i][0], cornerPositions[i][1], cornerPositions[i][2]);
+          this.lights[i].display();
+          this.scene.popMatrix();
+        }
       this.scene.popMatrix();
     }
   }

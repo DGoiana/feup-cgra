@@ -69,4 +69,8 @@ export class MyBuilding extends CGFobject {
       this.scene.popMatrix()
     }
   }
+
+  update(t) {
+    this.topFloor.update(t);
+  }
 }

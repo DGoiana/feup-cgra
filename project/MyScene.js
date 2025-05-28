@@ -62,7 +62,8 @@ export class MyScene extends CGFscene {
       vec3.fromValues(25, 50, 25),
       vec3.fromValues(0, 0, 0)
     );
-  }
+  } 
+  
   update(t) {
     let appStartTime = (t - this.appStartTime) / 1000.0
 
@@ -72,6 +73,10 @@ export class MyScene extends CGFscene {
 
     if (this.forest) {
       this.forest.update(appStartTime)
+    }
+    
+    if (this.building) {
+      this.building.update(appStartTime);
     }
   }
 
@@ -96,12 +101,10 @@ export class MyScene extends CGFscene {
     this.lights[0].update()
 
     // Draw axis
-    // this.axis.display();
-
-    this.setDefaultAppearance();
+    // this.axis.display();    
+    // this.setDefaultAppearance();
 
     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
-    // this.building.display();
     this.panorama.display();
 
     const distance = 20
