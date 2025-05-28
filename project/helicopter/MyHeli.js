@@ -4,7 +4,7 @@ import { Sphere } from '../common/Sphere.js'
 import { MyEllipsoid } from '../common/MyEllipsoid.js'
 import { MyCilinder } from '../common/MyCilinder.js'
 import { MyBucket } from './MyBucket.js'
-import { MyWaterDropletSystem } from './MyWaterDroplet.js'
+import { MyDropSystem } from '../environment/MyDrop.js'
 
 const MAIN_ROTOR_SPEED = 4
 const TAIL_ROTOR_SPEED = 10
@@ -54,7 +54,7 @@ export class MyHeli extends CGFobject {
 		this.water = new MyBucket(scene, 0.15, 0.2, true, true)
 		this.rope = new MyCilinder(scene, 5, 5, 0.01, 1)
 
-		this.waterDropletSystem = new MyWaterDropletSystem(scene)
+		this.waterDropSystem = new MyDropSystem(scene)
 
 		this.mainRotorAngle = 0
 		this.tailRotorAngle = 0
@@ -168,7 +168,7 @@ export class MyHeli extends CGFobject {
 		this.landingPhase = null
 		this.bucketFilled = false
 		this.showingRope = false
-		this.waterDropletSystem.clearAllDroplets()
+		this.waterDropSystem.clearAllDrops()
 	}
 
 	toggleCruise() {
@@ -247,7 +247,7 @@ export class MyHeli extends CGFobject {
 
 	clearFire() {
 		this.state = STATES.EXTINGUISHING
-		this.waterDropletSystem.startDropping(this.position, this.velocity)
+		this.waterDropSystem.startDropping(this.position, this.velocity)
 	}
 
 	checkKeys() {
@@ -328,16 +328,16 @@ export class MyHeli extends CGFobject {
 				}
 				break
 			case STATES.EXTINGUISHING:
-				if (this.waterDropletSystem.getActiveDropletCount() === 0 && !this.waterDropletSystem.isDropping) {
+				if (this.waterDropSystem.getActiveDropCount() === 0 && !this.waterDropSystem.isDropping) {
 					this.bucketFilled = false
 					this.state = STATES.CRUISING
 				}
 
-				if (this.waterDropletSystem.isDropping) {
+				if (this.waterDropSystem.isDropping) {
 					if (!this.dropStartTime) {
 						this.dropStartTime = currentTime
 					} else if (currentTime - this.dropStartTime > 2.0) {
-						this.waterDropletSystem.stopDropping()
+						this.waterDropSystem.stopDropping()
 						this.dropStartTime = null
 					}
 				}
@@ -352,10 +352,10 @@ export class MyHeli extends CGFobject {
 			this.tailRotorAngle += TAIL_ROTOR_SPEED * delta_t;
 		}
 
-		this.waterDropletSystem.update(delta_t, currentTime, this.position, this.velocity)
+		this.waterDropSystem.update(delta_t, currentTime, this.position, this.velocity)
 
-		if (this.scene.forest && this.waterDropletSystem.getActiveDropletCount() > 0) {
-			this.waterDropletSystem.checkFireCollisions(this.scene.forest)
+		if (this.scene.forest && this.waterDropSystem.getActiveDropCount() > 0) {
+			this.waterDropSystem.checkFireCollisions(this.scene.forest)
 		}
 
 		this.position.x += this.velocity.x * delta_t;
@@ -507,6 +507,6 @@ export class MyHeli extends CGFobject {
 
 		this.scene.popMatrix()
 
-		this.waterDropletSystem.display()
+		this.waterDropSystem.display()
 	}
 }
