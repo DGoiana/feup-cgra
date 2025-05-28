@@ -16,13 +16,18 @@ export class MyFire extends CGFobject {
     this.fireAppearance.setTextureWrap('REPEAT', 'REPEAT');
   }
 
+  update(t) {
+    this.flame.update(t)
+    this.rotatedFlame.update(t + 0.3)
+  }
+
   display() {
-    this.scene.pushMatrix()    
+    this.scene.pushMatrix()
       this.fireAppearance.apply()
       this.flame.display()
     this.scene.popMatrix()
 
-    this.scene.pushMatrix()    
+    this.scene.pushMatrix()
       this.fireAppearance.apply()
       this.scene.rotate(Math.PI / 2,0,1,0)
       this.rotatedFlame.display()

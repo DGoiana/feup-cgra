@@ -28,7 +28,7 @@ export class MyForest extends CGFobject {
 
     return x >= minX && x <= maxX && z >= minZ && z <= maxZ;
 	}
-	
+
 	generateForest() {
 		for(let row = 0; row < this.rows; row++) {
 			for(let col = 0; col < this.columns; col++) {
@@ -38,9 +38,9 @@ export class MyForest extends CGFobject {
 				let height = Math.random() * (7.5 - 3.5) + 3.5;
 				let radius = Math.random() * (0.9 - 0.3) + 0.3;
 				let color = [
-				    Math.random() * 0.2,           
-				    0.5 + Math.random() * 0.5,    
-				    Math.random() * 0.2                
+				    Math.random() * 0.2,
+				    0.5 + Math.random() * 0.5,
+				    Math.random() * 0.2
 				];
 				let rotation = [Math.random() * (Math.PI / 10), Math.random() < 0.5 ? 0 : 1]
 
@@ -54,15 +54,21 @@ export class MyForest extends CGFobject {
 	generateFire() {
 		for(let row = 0; row < this.rows; row++) {
 			for(let col = 0; col < this.columns; col++) {
-				if(Math.random() < .8) {
+				if(Math.random() < .5) {
 					let offset = Math.random() * 5
 					let scale = Math.random() * 2.0
-					let fire = new MyFire(this.scene,scale)
+					let fire = new MyFire(this.scene, scale)
 					this.fires.push([fire, row * 5 + offset, col * 5 + offset])
 				}
 			}
 		}
 
+	}
+
+	update(t) {
+		for (let fire of this.fires) {
+		  fire[0].update(t)
+		}
 	}
 
 	display() {

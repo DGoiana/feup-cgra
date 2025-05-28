@@ -63,15 +63,15 @@ export class MyScene extends CGFscene {
       vec3.fromValues(0, 0, 0)
     );
   }
-
-  checkKeys() {
-
-  }
   update(t) {
     let appStartTime = (t - this.appStartTime) / 1000.0
 
     if (this.heli) {
       this.heli.update(appStartTime);
+    }
+
+    if (this.forest) {
+      this.forest.update(appStartTime)
     }
   }
 
@@ -119,7 +119,7 @@ export class MyScene extends CGFscene {
     this.popMatrix();
 
     this.pushMatrix();
-      this.translate(distance, 0, distance);
+      this.translate(distance, 0, distance)
       this.forest.display();
     this.popMatrix();
 
