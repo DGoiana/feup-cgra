@@ -20,11 +20,17 @@ export class MyWindow extends CGFobject {
     this.windowMaterial.setTexture(this.windowTexture);
   }
 
+  updateTexture(newTexture) {
+    this.texture = newTexture
+    this.windowTexture = new CGFtexture(this.scene, this.texture)
+    this.windowMaterial.setTexture(this.windowTexture)
+  }
+
   display() {
     this.scene.pushMatrix();
-    this.windowMaterial.apply();
-    this.scene.gl.texParameteri(this.scene.gl.TEXTURE_2D, this.scene.gl.TEXTURE_MAG_FILTER, this.scene.gl.NEAREST);
-    this.quad.display();
+      this.windowMaterial.apply();
+      this.scene.gl.texParameteri(this.scene.gl.TEXTURE_2D, this.scene.gl.TEXTURE_MAG_FILTER, this.scene.gl.NEAREST);
+      this.quad.display();
     this.scene.popMatrix();
   }
 }

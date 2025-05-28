@@ -3,7 +3,7 @@ import { MyWindow } from './MyWindow.js';
 import { MyQuad } from '../common/MyQuad.js';
 
 export class MyBuildingFloor extends CGFobject {
-	constructor(scene,numWindow,windowTexture, baseFloor = false, topFloor = false) {
+	constructor(scene, numWindow, windowTexture, baseFloor = false, topFloor = false, ) {
     super(scene);
     //this.initBuffers();
     this.quad = new MyQuad(scene);
@@ -11,11 +11,19 @@ export class MyBuildingFloor extends CGFobject {
     this.windows = []
     this.topFloor = topFloor
     this.baseFloor = baseFloor
+
     for(let i = 0; i < numWindow; i++) {
       this.windows.push(new MyWindow(scene,windowTexture))
     }
-    this.heliport = new MyWindow(scene,'images/heliport.jpg');
+
+    this.heliportImagePath = 'images/heliport.jpg'
+
+    this.heliport = new MyWindow(scene, this.heliportImagePath);
     this.entrance = new MyWindow(scene,'images/entrance.jpg');
+  }
+
+  update() {
+
   }
 
 	display() {

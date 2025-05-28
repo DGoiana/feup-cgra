@@ -97,6 +97,8 @@ export class MyHeli extends CGFobject {
 
 		this.landingPhase = null
 
+		this.lastHeliportTexture = null
+
 		this.initMaterials()
 	}
 
@@ -131,6 +133,13 @@ export class MyHeli extends CGFobject {
 		this.waterMaterial.setDiffuse(0.05, 0.05, 0.9, 1.0)
 		this.waterMaterial.setSpecular(0.05, 0.05, 0.9, 1.0)
 		this.waterMaterial.setShininess(30)
+	}
+
+	updateHeliportTexture(texturePath) {
+		if (this.lastHeliportTexture !== texturePath) {
+			this.scene.building.topFloor.heliport.updateTexture(texturePath)
+			this.lastHeliportTexture = texturePath
+		}
 	}
 
 	turn(v) {
@@ -169,15 +178,18 @@ export class MyHeli extends CGFobject {
 		this.bucketFilled = false
 		this.showingRope = false
 		this.waterDropSystem.clearAllDrops()
+		this.updateHeliportTexture("images/heliport.jpg")
 	}
 
 	toggleCruise() {
 		if(this.state == STATES.ASCENDING) {
 			this.velocity.y = 0
 			this.state = STATES.CRUISING
+			this.updateHeliportTexture("images/heliport.jpg")
 		} else {
 			this.velocity.y = 2
 			this.state = STATES.ASCENDING
+			this.updateHeliportTexture("images/up_heli.png")
 		}
 	}
 
@@ -197,6 +209,7 @@ export class MyHeli extends CGFobject {
 		if (this.landingPhase === LANDING_PHASES.NAVIGATING) {
 			this.handleNavigation(delta_t)
 		} else if (this.landingPhase === LANDING_PHASES.DESCENDING) {
+			this.updateHeliportTexture("images/down_heli.png")
 			this.handleDescent()
 		}
 	}
@@ -362,7 +375,7 @@ export class MyHeli extends CGFobject {
 		this.position.y += this.velocity.y * delta_t;
 		this.position.z += this.velocity.z * delta_t;
 
-		console.log(this.scene.forest.isOverForest(this.position.x, this.position.z));
+		// console.log(this.scene.forest.isOverForest(this.position.x, this.position.z));
 	}
 
 	drawMainRotor() {
