@@ -217,16 +217,16 @@ export class MyHeli extends CGFobject {
 		this.landingPhase = LANDING_PHASES.NAVIGATING
 	}
 
-	handleLandingLogic(delta_t) {
+	handleLandingLogic(delta_t, speedFactor) {
 		if (this.landingPhase === LANDING_PHASES.NAVIGATING) {
-			this.handleNavigation(delta_t)
+			this.handleNavigation(delta_t, speedFactor)
 		} else if (this.landingPhase === LANDING_PHASES.DESCENDING) {
 			this.updateHeliportTexture("images/down_heli.png")
 			this.handleDescent()
 		}
 	}
 
-	handleNavigation(delta_t) {
+	handleNavigation(delta_t, speedFactor) {
 		const dx = -110 - this.position.x
 		const dz = -34 - this.position.z
 		const dy = CRUISING_ALTITUDE - this.position.y
@@ -243,10 +243,10 @@ export class MyHeli extends CGFobject {
 			let normalizedAngleDiff = ((angleDiff + Math.PI) % (2 * Math.PI)) - Math.PI
 
 			if (Math.abs(normalizedAngleDiff) > 0.1) {
-				this.accelerate(-0.1)
-				this.turn(Math.sign(normalizedAngleDiff) * 0.05 * delta_t * 60)
+				this.accelerate(-0.1 * speedFactor)
+				this.turn(Math.sign(normalizedAngleDiff) * 0.05 * delta_t * 60 * speedFactor)
 			} else {
-				this.accelerate(0.05)
+				this.accelerate(0.05 * speedFactor)
 			}
 		}
 		else {
@@ -275,21 +275,21 @@ export class MyHeli extends CGFobject {
 		this.waterDropSystem.startDropping(this.position, this.velocity)
 	}
 
-	checkKeys() {
+	checkKeys(speedFactor) {
 		if (this.scene.gui.isKeyPressed("KeyW")) {
-			this.accelerate(0.05);
+			this.accelerate(0.05 * speedFactor);
 		}
 
 		if (this.scene.gui.isKeyPressed("KeyS")) {
-			this.accelerate(-0.1);
+			this.accelerate(-0.1 * speedFactor);
 		}
 
 		if (this.scene.gui.isKeyPressed("KeyA")) {
-			this.turn(0.05);
+			this.turn(0.05 * speedFactor);
 		}
 
 		if (this.scene.gui.isKeyPressed("KeyD")) {
-			this.turn(-0.05);
+			this.turn(-0.05 * speedFactor);
 		}
 
 		if (this.scene.gui.isKeyPressed("KeyR")) {
@@ -313,7 +313,7 @@ export class MyHeli extends CGFobject {
 		}
 	}
 
-	update(appStartTime) {
+	update(appStartTime, speedFactor) {
 		let currentTime = appStartTime;
 		let delta_t = 0;
 
@@ -322,7 +322,7 @@ export class MyHeli extends CGFobject {
 		}
 		this.lastFrame = currentTime;
 
-		this.checkKeys();
+		this.checkKeys(speedFactor);
 
 		switch(this.state) {
 			case STATES.ASCENDING:
@@ -336,7 +336,7 @@ export class MyHeli extends CGFobject {
 				}
 				break
 			case STATES.LANDING:
-				this.handleLandingLogic(delta_t)
+				this.handleLandingLogic(delta_t, speedFactor)
 
 				if (this.position.y <= CRUISING_ALTITUDE - 4 && this.position.y >= BUCKET_ALTITUDE) {
 					this.bucketPosition.y += 0.1

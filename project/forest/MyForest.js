@@ -81,7 +81,7 @@ export class MyForest extends CGFobject {
 					let fireX = FOREST_CORNER.x + row * 5 + offset
 					let fireZ = FOREST_CORNER.z + col * 5 + offset
 
-					if (this.isOverLake(fireX, fireZ) || fireZ <= 40) {
+					if (this.isOverLake(fireX, fireZ) || fireZ <= 55) {
 						continue
 					}
 

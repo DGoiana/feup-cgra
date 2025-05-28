@@ -47,7 +47,7 @@ export class MyScene extends CGFscene {
     this.shader.setUniformsValues({ timeFactor: 0, uWaterSampler: 1, uTerrainSampler: 2 });
 
     this.planeMap = new CGFtexture(this, "textures/planeMap.png");
-    this.waterTex = new CGFtexture(this, "textures/waterTex.jpg");
+    this.waterTex = new CGFtexture(this, "textures/waterTex2.jpg");
     this.terrainTex = new CGFtexture(this, "images/grass.jpg");
 
     this.grassAppearance = new CGFappearance(this);
@@ -82,7 +82,7 @@ export class MyScene extends CGFscene {
     this.shader.setUniformsValues({timeFactor: appStartTime % 100})
 
     if (this.heli) {
-      this.heli.update(appStartTime);
+      this.heli.update(appStartTime, this.speedFactor);
 
       
       if (this.cameraMode !== this.lastCameraMode) {
