@@ -110,10 +110,10 @@ export class MyBuildingFloor extends CGFobject {
         const cornerOffset = .4;
         
         const cornerPositions = [
-          [-cornerOffset, 0.05, -cornerOffset], // top-left
-          [cornerOffset, 0.05, -cornerOffset],  // top-right
-          [-cornerOffset, 0.05, cornerOffset],  // bottom-left
-          [cornerOffset, 0.05, cornerOffset]    // bottom-right
+          [-cornerOffset, 0.01, -cornerOffset], // top-left
+          [cornerOffset, 0.01, -cornerOffset],  // top-right
+          [-cornerOffset, 0.01, cornerOffset],  // bottom-left
+          [cornerOffset, 0.01, cornerOffset]    // bottom-right
         ];
         
         this.scene.rotate(-angle,1,0,0);
