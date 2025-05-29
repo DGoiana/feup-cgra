@@ -8,6 +8,8 @@ import { MyDropSystem } from '../environment/MyDrop.js'
 
 const MAIN_ROTOR_SPEED = 4
 const TAIL_ROTOR_SPEED = 10
+const LEAN_STEP = 0.1;
+const MAX_LEAN = 0.01;
 
 const STATES = {
 	IDLE: 0,
@@ -94,6 +96,8 @@ export class MyHeli extends CGFobject {
 		this.bucketFilled = false
 
 		this.landingPhase = null
+		
+		this.leanAngle = 0;
 
 		this.lastHeliportTexture = null
 	}
@@ -174,6 +178,12 @@ export class MyHeli extends CGFobject {
 			this.velocity.x = Math.sin(this.orientation) * newSpeed;
 			this.velocity.z = Math.cos(this.orientation) * newSpeed;
 		}
+
+		if (v > MAX_LEAN) {
+				this.leanAngle = -LEAN_STEP;
+		} else if (v < -MAX_LEAN) { 
+				this.leanAngle = LEAN_STEP;
+		}
 	}
 
 	rest() {
@@ -187,25 +197,26 @@ export class MyHeli extends CGFobject {
 		this.landingPhase = null
 		this.bucketFilled = false
 		this.showingRope = false
+		this.leanAngle = 0;
 		this.waterDropSystem.clearAllDrops()
 		this.updateHeliportTexture("images/heliport.jpg")
 	}
 
-	toggleCruise() {
+	toggleCruise(speedFactor) {
 		if(this.state == STATES.ASCENDING) {
 			this.velocity.y = 0
 			this.state = STATES.CRUISING
 			this.updateHeliportTexture("images/heliport.jpg")
 		} else {
-			this.velocity.y = 2
+			this.velocity.y = 2 * speedFactor;
 			this.state = STATES.ASCENDING
 			this.updateHeliportTexture("images/up_heli.png")
 		}
 	}
 
-	getWater() {
+	getWater(speedFactor) {
 		this.state = STATES.DESCENDING
-		this.velocity.y = -5
+		this.velocity.y = -5 * speedFactor;
 	}
 
 	startLanding() {
@@ -220,7 +231,7 @@ export class MyHeli extends CGFobject {
 			this.handleNavigation(delta_t, speedFactor)
 		} else if (this.landingPhase === LANDING_PHASES.DESCENDING) {
 			this.updateHeliportTexture("images/down_heli.png")
-			this.handleDescent()
+			this.handleDescent(speedFactor)
 		}
 	}
 
@@ -232,7 +243,7 @@ export class MyHeli extends CGFobject {
     const horizontalDistance = Math.hypot(dx, dz);
 
 		if (Math.abs(dy) > 1.0) {
-			this.velocity = {x: 0, y: 2, z: 0}
+			this.velocity = {x: 0, y: 2 * speedFactor, z: 0}
 		}
 		else if (horizontalDistance > 1.0) {
 			const targetAngle = Math.atan2(dx, dz)
@@ -252,17 +263,21 @@ export class MyHeli extends CGFobject {
 
 			if (Math.abs(normalizedOrientation) > 0.1) {
 				this.velocity = {x: 0, y: 0, z: 0}
-				this.turn(-Math.sign(normalizedOrientation) * 0.05 * delta_t * 60)
+				this.turn(-Math.sign(normalizedOrientation) * 0.05 * delta_t * 60 * speedFactor)
 			} else {
 				this.landingPhase = LANDING_PHASES.DESCENDING
-				this.velocity = {x: 0, y: -2, z: 0}
+				this.velocity = {x: 0, y: -2 * speedFactor, z: 0}
 				this.orientation = 0
 			}
 		}
 	}
 
-	handleDescent() {
+	handleDescent(speedFactor) {
 		const height = this.scene.building ? this.scene.building.getHeight() : 32.25;
+
+		if (this.velocity.y === 0 || this.velocity.y > -0.01) {
+			this.velocity.y = -2 * speedFactor;
+		}
 
 		if (this.position.y <= height + 0.5) {
 			this.rest()
@@ -277,19 +292,19 @@ export class MyHeli extends CGFobject {
 
 	checkKeys(speedFactor) {
 		if (this.scene.gui.isKeyPressed("KeyW")) {
-			this.accelerate(0.05 * speedFactor);
+			this.accelerate(0.3 * speedFactor);
 		}
 
 		if (this.scene.gui.isKeyPressed("KeyS")) {
-			this.accelerate(-0.1 * speedFactor);
+			this.accelerate(-0.3 * speedFactor);
 		}
 
 		if (this.scene.gui.isKeyPressed("KeyA")) {
-			this.turn(0.05 * speedFactor);
+			this.turn(0.3 * speedFactor);
 		}
 
 		if (this.scene.gui.isKeyPressed("KeyD")) {
-			this.turn(-0.05 * speedFactor);
+			this.turn(-0.3 * speedFactor);
 		}
 
 		if (this.scene.gui.isKeyPressed("KeyR")) {
@@ -297,7 +312,7 @@ export class MyHeli extends CGFobject {
 		}
 
 		if (this.scene.gui.isKeyPressed("KeyP")) {
-			this.toggleCruise()
+			this.toggleCruise(speedFactor)
 		}
 
 		if (this.scene.gui.isKeyPressed("KeyO") && this.bucketFilled && this.scene.forest.isOverForest(this.position.x, this.position.z)) {
@@ -306,7 +321,7 @@ export class MyHeli extends CGFobject {
 
 		if (this.scene.gui.isKeyPressed("KeyL") && this.state != STATES.LANDING && this.state != STATES.DESCENDING) {
 			if(this.isOverLake(this.position.x, this.position.z) && !this.bucketFilled) {
-				this.getWater()
+				this.getWater(speedFactor)
 			} else {
 				this.startLanding()
 			}
@@ -324,22 +339,27 @@ export class MyHeli extends CGFobject {
 
 		this.checkKeys(speedFactor);
 
+		this.leanAngle *= 0.95;
+		if (Math.abs(this.leanAngle) < 0.001) {
+				this.leanAngle = 0;
+		}
+
 		switch(this.state) {
 			case STATES.ASCENDING:
 				if (this.position.y >= (this.scene.building.getHeight() + 15)) {
-					this.toggleCruise()
+					this.toggleCruise(speedFactor)
 				}
 
 				if (this.position.y >= this.scene.building.getHeight() + 10 && this.position.y < this.scene.building.getHeight() + 11 && !this.bucketFilled) {
 					this.showingRope = true
-					this.bucketPosition.y -= 0.1
+					this.bucketPosition.y -= 0.1 * speedFactor
 				}
 				break
 			case STATES.LANDING:
 				this.handleLandingLogic(delta_t, speedFactor)
 
 				if (this.position.y <= this.scene.building.getHeight() + 11 && this.position.y >= this.scene.building.getHeight() + 10) {
-					this.bucketPosition.y += 0.1
+					this.bucketPosition.y += 0.1 * speedFactor
 				}
 
 				if (this.position.y <= this.scene.building.getHeight() + 10) {
@@ -512,6 +532,7 @@ export class MyHeli extends CGFobject {
 			this.scene.popMatrix()
 
 			this.scene.rotate(this.orientation, 0, 1, 0)
+			this.scene.rotate(this.leanAngle, 1, 0, 0);
 
 			this.bodyMaterial.apply()
 			this.scene.pushMatrix()
