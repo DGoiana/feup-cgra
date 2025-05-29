@@ -84,14 +84,14 @@ export class MyScene extends CGFscene {
   initCameras() {
     this.camera = new CGFcamera(
       1,
-      0.1,
+      0.01,
       10000,
-      vec3.fromValues(1, 80, 1),
+      vec3.fromValues(50, 80, 50),
       vec3.fromValues(0, 0, 0)
     );
     
     this.freeViewCamera = {
-      position: vec3.fromValues(1, 80, 1),
+      position: vec3.fromValues(50, 80, 50),
       target: vec3.fromValues(0, 0, 0)
     };
   }  
