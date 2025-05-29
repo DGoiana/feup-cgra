@@ -29,7 +29,7 @@ export class MyScene extends CGFscene {
     
     this.textureManager = new TextureManager(this);
 
-    this.speedFactor = 0.1;
+    this.speedFactor = 0.85;
     this.fireAnimation = false;
     this.treesOffset = 5
     this.forestRows = 20
