@@ -8,7 +8,7 @@ export const FOREST_CORNER = {
 }
 
 export class MyForest extends CGFobject {
-	constructor(scene, rows, columns, offset) {
+	constructor(scene, rows, columns, offset, treeHeight, firePercentage) {
 		super(scene)
 		this.rows = rows
 		this.columns = columns
@@ -17,6 +17,8 @@ export class MyForest extends CGFobject {
 		this.fires = []
 
 		this.offset = offset
+		this.treeHeight = treeHeight
+		this.firePercentage = firePercentage
 
 		this.stemAppearance = null
 		this.leafAppearance = null
@@ -82,10 +84,12 @@ export class MyForest extends CGFobject {
 	 * @param {number} rows - new value for rows
 	 * @param {number} cols - new value for cols
 	 */
-	regenerateForest(newOffset, rows, cols) {
+	regenerateForest(newOffset, rows, cols, treeHeight, firePercentage) {
 		this.offset = newOffset
 		this.rows = rows
 		this.columns = cols
+		this.treeHeight = treeHeight
+		this.firePercentage = firePercentage
 
 		this.trees = []
 		this.fires = []
@@ -111,7 +115,8 @@ export class MyForest extends CGFobject {
 					continue
 				}
 
-				let height = Math.random() * (7.5 - 3.5) + 3.5;
+				let heightVariation = this.treeHeight * 0.3;
+				let height = this.treeHeight + (Math.random() - 0.5) * heightVariation;
 				let radius = Math.random() * (0.9 - 0.3) + 0.3;
 
 				let color = [
@@ -137,7 +142,7 @@ export class MyForest extends CGFobject {
 	generateFire(rows, cols) {
 		for(let row = 0; row < rows; row++) {
 			for(let col = 0; col < cols; col++) {
-				if(Math.random() < .3) {
+				if(Math.random() < this.firePercentage) {
 					let offset = Math.random() * this.offset
 
 					let fireX = FOREST_CORNER.x + row * 5 + offset

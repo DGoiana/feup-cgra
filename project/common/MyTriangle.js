@@ -69,8 +69,8 @@ export class MyTriangle extends CGFobject {
         const vertexIndex = i * 3;
         const offset = this.vertexOffsets[i];
 
-        const oscillationX = Math.sin(t * this.oscillationFrequency + offset.phase) * this.oscillation * offset.x;
-        const oscillationY = Math.sin(t * this.oscillationFrequency * 1.3 + offset.phase + 1) * this.oscillation * offset.y;
+        const oscillationX = Math.sin(t * this.oscillationFrequency + offset.phase) * Math.sin(this.oscillation) * offset.x;
+        const oscillationY = Math.sin(t * this.oscillationFrequency * 1.3 + offset.phase + 1) * Math.sin(this.oscillation) * offset.y;
 
         this.vertices[vertexIndex] = this.originalVertices[vertexIndex] + oscillationX;
         this.vertices[vertexIndex + 1] = this.originalVertices[vertexIndex + 1] + oscillationY;

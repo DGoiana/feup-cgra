@@ -32,9 +32,12 @@ export class MyScene extends CGFscene {
     // defining default screen settings
     this.speedFactor = 0.85;
     this.fireAnimation = false;
+    this.firePercentage = 0.3
     this.treesOffset = 5
     this.forestRows = 20
     this.forestCols = 20
+    this.treeHeight = 5.5;
+
     this.buildingFloors = 5
     this.buildingWindows = 3
     this.helicopterColor = [128, 128, 128];
@@ -52,7 +55,7 @@ export class MyScene extends CGFscene {
     this.plane = new MyPlane(this, 64);    
     this.building = new MyBuilding(this, 10, this.buildingFloors, this.buildingWindows, this.buildingColor);
     this.panorama = new MyPanorama(this);
-    this.forest = new MyForest(this, this.forestRows, this.forestCols, this.treesOffset);
+    this.forest = new MyForest(this, this.forestRows, this.forestCols, this.treesOffset, this.treeHeight, this.firePercentage);
     this.heli = new MyHeli(this);
     
     this.shader = new CGFshader(this.gl, "shaders/plane.vert", "shaders/plane.frag");    
@@ -92,14 +95,14 @@ export class MyScene extends CGFscene {
   initCameras() {
     this.camera = new CGFcamera(
       1,
-      0.1,
+      0.01,
       10000,
-      vec3.fromValues(1, 80, 1),
+      vec3.fromValues(50, 80, 50),
       vec3.fromValues(0, 0, 0)
     );
     
     this.freeViewCamera = {
-      position: vec3.fromValues(1, 80, 1),
+      position: vec3.fromValues(50, 80, 50),
       target: vec3.fromValues(0, 0, 0)
     };
   }  
@@ -115,8 +118,7 @@ export class MyScene extends CGFscene {
 
     if (this.heli) {
       this.heli.update(appStartTime, this.speedFactor);
-
-      
+            
       // Update camera view
       if (this.cameraMode !== this.lastCameraMode) {
         if (this.cameraMode === 'Free View') {
@@ -145,15 +147,15 @@ export class MyScene extends CGFscene {
         ]);
         this.camera.setTarget([heliPos.x, heliPos.y, heliPos.z]);
       }
-    }    
-      // Regenerate forest if needed
-      if (this.forest) {
-        if (this.fireAnimation) this.forest.update(appStartTime)
+    }      
+    
+    if (this.forest) {
+      if (this.fireAnimation) this.forest.update(appStartTime)
 
-        if(this.forest.offset != this.treesOffset || this.forest.rows != this.forestRows || this.forest.columns != this.forestCols) {
-          this.forest.regenerateForest(this.treesOffset, this.forestRows, this.forestCols)
+      if(this.forest.offset != this.treesOffset || this.forest.rows != this.forestRows || this.forest.columns != this.forestCols || this.forest.treeHeight != this.treeHeight || this.forest.firePercentage != this.firePercentage) {
+        this.forest.regenerateForest(this.treesOffset, this.forestRows, this.forestCols, this.treeHeight, this.firePercentage)
       }
-    }    
+    }
     
     // Regenerates building and reposition helicopter if needed
     if (this.building) {
