@@ -38,17 +38,21 @@ export class MyScene extends CGFscene {
     this.buildingFloors = 5
     this.buildingWindows = 3
 
+    this.helicopterColor = [128, 128, 128];
+    this.buildingColor = [255, 255, 255];
+
     this.cameraMode = 'Free View';
     this.lastCameraMode = 'Free View';
 
     this.enableTextures(true);    
     this.setUpdatePeriod(50);
     
-    this.appStartTime = Date.now();    
+    this.appStartTime = Date.now();      
     this.axis = new CGFaxis(this, 20, 1);
+
     this.plane = new MyPlane(this, 64);    
-    this.building = new MyBuilding(this, 10, this.buildingFloors, this.buildingWindows, [255,255,255]);
-    this.panorama = new MyPanorama(this);      
+    this.building = new MyBuilding(this, 10, this.buildingFloors, this.buildingWindows, this.buildingColor);
+    this.panorama = new MyPanorama(this);
     this.forest = new MyForest(this, this.forestRows, this.forestCols, this.treesOffset);
     this.heli = new MyHeli(this);
     
@@ -62,11 +66,12 @@ export class MyScene extends CGFscene {
     this.planeMap = this.textureManager.getTexture("textures/planeMap.png");
     this.waterTex = this.textureManager.getTexture("textures/waterTex2.jpg");
     this.terrainTex = this.textureManager.getTexture("images/grass.jpg");
-    
     this.building.initMaterials(this.textureManager);
     this.panorama.initMaterials(this.textureManager);
     this.forest.initMaterials(this.textureManager);
     this.heli.initMaterials(this.textureManager);
+    
+    this.heli.updateMaterials(this.helicopterColor);
   }
 
   initLights() {
@@ -204,5 +209,18 @@ export class MyScene extends CGFscene {
       this.translate(-110, 0, -40);
       this.building.display();
     this.popMatrix();
+  }
+
+  updateHelicopterColor() {
+    if (this.heli) {
+      this.heli.updateMaterials(this.helicopterColor);
+    }
+  }
+
+  updateBuildingColor() {
+    if (this.building) {
+      this.building.color = this.buildingColor;
+      this.building.initMaterials(this.textureManager);
+    }
   }
 }

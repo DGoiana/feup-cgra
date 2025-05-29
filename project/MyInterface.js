@@ -30,6 +30,13 @@ export class MyInterface extends CGFinterface {
         this.gui.add(this.scene, 'buildingFloors', 1, 10).step(1).name('Building Floors');
         this.gui.add(this.scene, 'buildingWindows', 1, 8).step(1).name('Building Windows');
 
+        this.gui.addColor(this.scene, 'helicopterColor').name('Helicopter Color').onChange(() => {
+            this.scene.updateHelicopterColor();
+        });
+        this.gui.addColor(this.scene, 'buildingColor').name('Building Color').onChange(() => {
+            this.scene.updateBuildingColor();
+        });
+
         this.initKeys();
 
         return true;

@@ -139,6 +139,16 @@ export class MyHeli extends CGFobject {
 		this.waterMaterial.setShininess(30)
 	}
 
+	updateMaterials(color) {
+		if (!color) return;
+		
+		const [r, g, b] = color.map(c => c / 255.0);
+		
+		this.bodyMaterial.setAmbient(r * 0.2, g * 0.2, b * 0.2, 1.0);
+		this.bodyMaterial.setDiffuse(r * 0.7, g * 0.7, b * 0.7, 1.0);
+		this.bodyMaterial.setSpecular(r * 0.5, g * 0.5, b * 0.5, 1.0);
+	}
+
 	isOverLake(x, z) {
     const lakeCenter = { x: -100, z: 65 };
     const lakeRadius = 40;
