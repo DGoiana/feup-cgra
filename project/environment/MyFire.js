@@ -12,11 +12,18 @@ export class MyFire extends CGFobject {
     this.fireAppearance = fireAppearance
   }
 
+  /**
+   * Updates the flames position
+   * @param {number} t - Time elapsed in milliseconds
+   */
   update(t) {
     this.flame.update(t)
     this.rotatedFlame.update(t + 0.3)
   }
 
+  /**
+   * Displays the fire in the scene
+   */
   display() {
     this.scene.pushMatrix()
       this.fireAppearance.apply()

@@ -27,6 +27,9 @@ export class MyTree extends CGFobject {
 		this.stem = new MyCone(scene, 8 , 1, this.height, this.baseRadius)
 	}
 
+	/**
+	 * Displays the forest in the scene
+	 */
 	display() {
 		this.scene.rotate(this.angle, this.axis ? 1 : 0, 0, this.axis ? 0 : 1)
 

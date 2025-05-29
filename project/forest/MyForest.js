@@ -43,6 +43,12 @@ export class MyForest extends CGFobject {
 		this.generateFire(this.rows, this.columns)
 	}
 
+	/**
+	 * Determines if the position is over the forest instance (for helicopter) 
+	 * @param {number} x 
+	 * @param {number} z 
+	 * @returns if the position is over the forest
+	 */
 	isOverForest(x, z) {
 		const minX = FOREST_CORNER.x;
     const maxX = FOREST_CORNER.x + (this.columns * 5);
@@ -52,6 +58,12 @@ export class MyForest extends CGFobject {
     return x >= minX && x <= maxX && z >= minZ && z <= maxZ;
 	}
 
+	/**
+	 * Determines if the position is over the lake (for helicopter) 
+	 * @param {number} x 
+	 * @param {number} z 
+	 * @returns if the position is over the forest
+	 */
 	isOverLake(x, z) {
 		const lakeCenter = { x: -105, z: 60 };
 		const lakeRadius = 50;
@@ -64,6 +76,12 @@ export class MyForest extends CGFobject {
 		return distance <= lakeRadius;
 	}
 
+	/**
+	 * Regenerates forest with changed arguments
+	 * @param {number} newOffset - new value for offset
+	 * @param {number} rows - new value for rows
+	 * @param {number} cols - new value for cols
+	 */
 	regenerateForest(newOffset, rows, cols) {
 		this.offset = newOffset
 		this.rows = rows
@@ -75,6 +93,11 @@ export class MyForest extends CGFobject {
 		this.generateFire(rows, cols)
 	}
 
+	/**
+	 * Generates a random forest in a matrix of RowsxCols
+	 * @param {number} rows - number of rows
+	 * @param {number} cols - number of columns
+	 */
 	generateForest(rows, cols) {
 		for(let row = 0; row < rows; row++) {
 			for(let col = 0; col < cols; col++) {
@@ -106,6 +129,11 @@ export class MyForest extends CGFobject {
 		}
 	}
 
+	/**
+	 * Generates random fires instances in a matrix of RowsxCols
+	 * @param {number} rows - number of rows
+	 * @param {number} cols - number of columns
+	 */
 	generateFire(rows, cols) {
 		for(let row = 0; row < rows; row++) {
 			for(let col = 0; col < cols; col++) {
@@ -128,12 +156,19 @@ export class MyForest extends CGFobject {
 
 	}
 
+	/**
+	 * Updates the fires
+	 * @param {number} t - Time Elapsed in milliseconds
+	 */
 	update(t) {
 		for (let fire of this.fires) {
 		  fire[0].update(t)
 		}
 	}
 
+	/**
+	 * Displays the forest in the scene
+	 */
 	display() {
 		for(let tree of this.trees) {
 			this.scene.pushMatrix()

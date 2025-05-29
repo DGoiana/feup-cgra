@@ -14,6 +14,10 @@ export class MyFlame extends CGFobject {
     this.lastUpdateTime = 0;
   }
 
+  /**
+   * Updates the polygons on the flame's triangle to perform animation
+   * @param {number} t - Time elapsed in milliseconds
+   */
   update(t) {
     if (t - this.lastUpdateTime >= UPDATE_INTERVAL) {
       this.triangle.update(t)
@@ -21,6 +25,9 @@ export class MyFlame extends CGFobject {
     }
   }
 
+  /**
+   * Displays flame in the scene
+   */
   display() {
     this.scene.pushMatrix();
       this.scene.scale(this.scale, 2 * this.scale,this.scale)

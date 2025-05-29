@@ -3,6 +3,9 @@ import { Sphere } from '../common/Sphere.js'
 
 const GRAVITY = -9.8
 
+/**
+ * MyDrop defines a single drop
+ */
 export class MyDrop extends CGFobject {
     constructor(scene, size = 0.1, position = {x: 0, y: 0, z: 0}, velocity = {x: 0, y: -2, z: 0}) {
         super(scene)
@@ -25,6 +28,11 @@ export class MyDrop extends CGFobject {
         this.waterMaterial.setShininess(100)
     }
 
+    /**
+     * Updates the drop position according to gravity.
+     * @param {number} deltaTime - Elapsed time in milliseconds.
+     * @returns 
+     */
     update(deltaTime) {
         if (!this.active) return
 
@@ -39,6 +47,11 @@ export class MyDrop extends CGFobject {
         }
     }
 
+    /**
+     * Checks if the drop has collided with a fire instance.
+     * @param {array} firePosition - fire x and z positions in the scene.
+     * @returns 
+     */
     checkCollisionWithFire(firePosition) {
         if (!this.active) return false
 
@@ -52,14 +65,26 @@ export class MyDrop extends CGFobject {
         return distance < 10.0 && this.position.y < 3.0
     }
 
+    /**
+     * Determines if drop is active or not.
+     * @returns if drop has not already collided with fire.
+     */
     isActive() {
         return this.active
     }
 
+    /**
+     * Returns the current drop position.
+     * @returns drop position.
+     */
     getPosition() {
         return this.position
     }
 
+    /**
+     * Displays the drop in the scene.
+     * @returns 
+     */
     display() {
         if (!this.active) return
 
@@ -80,6 +105,9 @@ export class MyDrop extends CGFobject {
     }
 }
 
+/**
+ * MyDropSystem defines the whole animation and behaviour of group of drops that extinguishes the fire.
+ */
 export class MyDropSystem extends CGFobject {
     constructor(scene) {
         super(scene)
@@ -90,16 +118,29 @@ export class MyDropSystem extends CGFobject {
         this.lastDropTime = 0
     }
 
+    /**
+     * Sets up variables to start dropping drops of water.
+     */
     startDropping(helicopterPosition, helicopterVelocity) {
         this.isDropping = true
         this.helicopterPos = { ...helicopterPosition }
         this.helicopterVel = { ...helicopterVelocity }
     }
 
+    /**
+     * Updates the drop system to start dropping water.
+     */
     stopDropping() {
         this.isDropping = false
     }
 
+    /**
+     * Creates drops for a drop interval and then after it, just updates the drops to fall.
+     * @param {number} deltaTime            - time elapsed in milliseconds.
+     * @param {number} currentTime          - current time.
+     * @param {array} helicopterPosition    - helicopter position (X,Z).
+     * @param {array} helicopterVelocity    - helicopter velocity
+     */
     update(deltaTime, currentTime, helicopterPosition, helicopterVelocity) {
         if (this.isDropping && currentTime - this.lastDropTime >= this.dropInterval) {
             this.createDrop(helicopterPosition, helicopterVelocity)
@@ -115,6 +156,11 @@ export class MyDropSystem extends CGFobject {
         }
     }
 
+    /**
+     * Creates a new drop according to the helicopter position and velocity
+     * @param {array} helicopterPosition    - helicopter position (X,Z)
+     * @param {array} helicopterVelocity    - helicopter velocity
+     */
     createDrop(helicopterPosition, helicopterVelocity) {
         const spreadX = (Math.random() - 0.5) * 2.0
         const spreadZ = (Math.random() - 0.5) * 2.0
@@ -137,6 +183,11 @@ export class MyDropSystem extends CGFobject {
         this.drops.push(drop)
     }
 
+    /**
+     * Checks drops collision and extinguishes fires for a whole forest instance
+     * @param {MyForest} forest 
+     * @returns if has fires that were extinguised
+     */
     checkFireCollisions(forest) {
         const extinguishedFires = []
 
@@ -160,15 +211,25 @@ export class MyDropSystem extends CGFobject {
         return extinguishedFires.length > 0
     }
 
+    /**
+     * Determines the number of active drops
+     * @returns the number of active drops
+     */
     getActiveDropCount() {
         return this.drops.filter(drop => drop.isActive()).length
     }
 
+    /**
+     * Removes all drops from the system and stops dropping
+     */
     clearAllDrops() {
         this.drops = []
         this.isDropping = false
     }
 
+    /**
+     * Displays the system in the scene
+     */
     display() {
         for (let drop of this.drops) {
           drop.display()
