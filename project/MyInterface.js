@@ -22,11 +22,12 @@ export class MyInterface extends CGFinterface {
         this.gui.add(this.scene, 'cameraMode', ['Free View', 'Helicopter View']).name('Camera Mode');        
         
         this.gui.add(this.scene, 'fireAnimation', false).name('Fire Animation');
+        this.gui.add(this.scene, 'firePercentage', 0.1, 0.5).name('Fire Percentage');
 
         this.gui.add(this.scene, 'forestRows', 5, 45).step(1).name('Forest Rows');
         this.gui.add(this.scene, 'forestCols', 5, 45).step(1).name('Forest Columns');
         this.gui.add(this.scene, 'treesOffset', 5, 15).name('Trees Spacing');
-        
+
         this.gui.add(this.scene, 'treeHeight', 2, 12).name('Tree Height');
 
         this.gui.add(this.scene, 'buildingFloors', 1, 10).step(1).name('Building Floors');

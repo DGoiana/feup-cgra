@@ -31,6 +31,7 @@ export class MyScene extends CGFscene {
 
     this.speedFactor = 0.85;
     this.fireAnimation = false;
+    this.firePercentage = 0.3
     this.treesOffset = 5
     this.forestRows = 20
     this.forestCols = 20
@@ -52,7 +53,7 @@ export class MyScene extends CGFscene {
     this.axis = new CGFaxis(this, 20, 1);    this.plane = new MyPlane(this, 64);    
     this.building = new MyBuilding(this, 10, this.buildingFloors, this.buildingWindows, this.buildingColor);
     this.panorama = new MyPanorama(this);
-    this.forest = new MyForest(this, this.forestRows, this.forestCols, this.treesOffset, this.treeHeight);
+    this.forest = new MyForest(this, this.forestRows, this.forestCols, this.treesOffset, this.treeHeight, this.firePercentage);
     this.heli = new MyHeli(this);
     
     this.shader = new CGFshader(this.gl, "shaders/plane.vert", "shaders/plane.frag");    
@@ -103,7 +104,6 @@ export class MyScene extends CGFscene {
     if (this.heli) {
       this.heli.update(appStartTime, this.speedFactor);
 
-      
       if (this.cameraMode !== this.lastCameraMode) {
         if (this.cameraMode === 'Free View') {
           this.camera.setPosition([
@@ -136,8 +136,8 @@ export class MyScene extends CGFscene {
     if (this.forest) {
       if (this.fireAnimation) this.forest.update(appStartTime)
 
-      if(this.forest.offset != this.treesOffset || this.forest.rows != this.forestRows || this.forest.columns != this.forestCols || this.forest.treeHeight != this.treeHeight) {
-        this.forest.regenerateForest(this.treesOffset, this.forestRows, this.forestCols, this.treeHeight)
+      if(this.forest.offset != this.treesOffset || this.forest.rows != this.forestRows || this.forest.columns != this.forestCols || this.forest.treeHeight != this.treeHeight || this.forest.firePercentage != this.firePercentage) {
+        this.forest.regenerateForest(this.treesOffset, this.forestRows, this.forestCols, this.treeHeight, this.firePercentage)
       }
     }
     
