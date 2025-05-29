@@ -33,6 +33,13 @@ const LANDING_PHASES = {
  * @param {CGFscene} scene
 */
 export class MyHeli extends CGFobject {
+	/**
+   * Initializes the helicopter object with its components and default state.
+   * @param {CGFscene} scene - The scene to which the helicopter belongs.
+   * @param {Array} pos - Initial position of the helicopter [x, y, z].
+   * @param {number} startTime - The start time for animations.
+   * @param {number} scale - The scale of the helicopter.
+   */
 	constructor(scene, pos = [-110, 32.25, -34], startTime = 0, scale = 3) {
 		super(scene)
 
@@ -106,6 +113,9 @@ export class MyHeli extends CGFobject {
 		this.lKeyWasPressed = false;
 	}
 
+	/**
+   * Initializes the materials used for the helicopter components.
+   */
 	initMaterials(_) {
 
 		this.bodyMaterial = new CGFappearance(this.scene)
@@ -139,6 +149,10 @@ export class MyHeli extends CGFobject {
 		this.waterMaterial.setShininess(30)
 	}
 
+	/**
+   * Updates the helicopter's body material based on the given color.
+   * @param {Array} color - RGB color array [r, g, b].
+   */
 	updateMaterials(color) {
 		if (!color) return;
 		
@@ -149,6 +163,12 @@ export class MyHeli extends CGFobject {
 		this.bodyMaterial.setSpecular(r * 0.5, g * 0.5, b * 0.5, 1.0);
 	}
 
+	/**
+   * Checks if the helicopter is over the lake.
+   * @param {number} x - The x-coordinate of the helicopter.
+   * @param {number} z - The z-coordinate of the helicopter.
+   * @returns {boolean} True if the helicopter is over the lake, false otherwise.
+   */
 	isOverLake(x, z) {
     const lakeCenter = { x: -100, z: 65 };
     const lakeRadius = 40;
@@ -161,6 +181,10 @@ export class MyHeli extends CGFobject {
     return distance <= lakeRadius;
   }
 
+	/**
+   * Updates the texture of the heliport based on the given texture path.
+   * @param {string} texturePath - Path to the new texture.
+   */
 	updateHeliportTexture(texturePath) {
 		if (this.lastHeliportTexture !== texturePath) {
 			this.scene.building.topFloor.heliport.updateTexture(this.scene.textureManager, texturePath)
@@ -168,6 +192,10 @@ export class MyHeli extends CGFobject {
 		}
 	}
 
+	/**
+   * Rotates the helicopter by a given angle.
+   * @param {number} v - The angle to rotate by (in radians).
+   */
 	turn(v) {
 		this.orientation += v;
 
@@ -179,6 +207,10 @@ export class MyHeli extends CGFobject {
 		}
 	}
 
+	/**
+   * Adjusts the helicopter's speed by a given value.
+   * @param {number} v - The value to adjust the speed by.
+   */
 	accelerate(v) {
 		const currentSpeed = Math.sqrt(this.velocity.x * this.velocity.x + this.velocity.z * this.velocity.z);
 
@@ -200,6 +232,9 @@ export class MyHeli extends CGFobject {
 		}
 	}
 
+	/**
+   * Resets the helicopter to its initial state and position.
+   */
 	rest() {
 		const height = this.scene.building ? this.scene.building.getHeight() : 32.25;
 		
@@ -216,6 +251,10 @@ export class MyHeli extends CGFobject {
 		this.updateHeliportTexture("images/heliport.jpg")
 	}
 
+	/**
+   * Toggles the helicopter between ascending and cruising states.
+   * @param {number} speedFactor - The speed factor for the transition.
+   */
 	toggleCruise(speedFactor) {
 		if(this.state == STATES.ASCENDING) {
 			this.velocity.y = 0
@@ -228,11 +267,18 @@ export class MyHeli extends CGFobject {
 		}
 	}
 
+	/**
+   * Initiates the process of descending to collect water.
+   * @param {number} speedFactor - The speed factor for the descent.
+   */
 	getWater(speedFactor) {
 		this.state = STATES.DESCENDING
 		this.velocity.y = -5 * speedFactor;
 	}
 
+	/**
+   * Starts the landing process for the helicopter.
+   */
 	startLanding() {
 		if(this.state == STATES.IDLE) return
 
@@ -240,6 +286,11 @@ export class MyHeli extends CGFobject {
 		this.landingPhase = LANDING_PHASES.NAVIGATING
 	}
 
+	/**
+   * Handles the logic for landing, including navigation and descent.
+   * @param {number} delta_t - Time elapsed since the last frame.
+   * @param {number} speedFactor - The speed factor for the landing process.
+   */
 	handleLandingLogic(delta_t, speedFactor) {
 		if (this.landingPhase === LANDING_PHASES.NAVIGATING) {
 			this.handleNavigation(delta_t, speedFactor)
@@ -249,6 +300,11 @@ export class MyHeli extends CGFobject {
 		}
 	}
 
+	/**
+   * Handles navigation logic to guide the helicopter to a target position.
+   * @param {number} delta_t - Time elapsed since the last frame.
+   * @param {number} speedFactor - The speed factor for navigation.
+   */
 	handleNavigation(delta_t, speedFactor) {
 		const dx = -110 - this.position.x
 		const dz = -34 - this.position.z
@@ -286,6 +342,10 @@ export class MyHeli extends CGFobject {
 		}
 	}
 
+	/**
+   * Handles the descent phase of the landing process.
+   * @param {number} speedFactor - The speed factor for the descent.
+   */
 	handleDescent(speedFactor) {
 		const height = this.scene.building ? this.scene.building.getHeight() : 32.25;
 
@@ -299,11 +359,18 @@ export class MyHeli extends CGFobject {
 		}
 	}
 
+	/**
+   * Initiates the process of extinguishing fires by dropping water.
+   */
 	clearFire() {
 		this.state = STATES.EXTINGUISHING
 		this.waterDropSystem.startDropping(this.position, this.velocity)
 	}
 
+	/**
+   * Checks for user input and updates the helicopter's state accordingly.
+   * @param {number} speedFactor - The speed factor for the helicopter's movements.
+   */
 	checkKeys(speedFactor) {
 		if (this.scene.gui.isKeyPressed("KeyW")) {
 			this.accelerate(0.3 * speedFactor);
@@ -352,6 +419,11 @@ export class MyHeli extends CGFobject {
 		}
 	}
 
+	/**
+   * Updates the helicopter's state and animations based on the elapsed time.
+   * @param {number} appStartTime - The current application time.
+   * @param {number} speedFactor - The speed factor for the helicopter's movements.
+   */
 	update(appStartTime, speedFactor) {
 		let currentTime = appStartTime;
 		let delta_t = 0;
@@ -434,6 +506,9 @@ export class MyHeli extends CGFobject {
 		// console.log(this.scene.forest.isOverForest(this.position.x, this.position.z));
 	}
 
+	/**
+   * Draws the main rotor of the helicopter.
+   */
 	drawMainRotor() {
 		this.rotorMaterial.apply()
 
@@ -461,6 +536,9 @@ export class MyHeli extends CGFobject {
 		this.scene.popMatrix()
 	}
 
+	/**
+   * Draws the tail rotor of the helicopter.
+   */
 	drawTailRotor() {
 		this.rotorMaterial.apply()
 
@@ -482,6 +560,9 @@ export class MyHeli extends CGFobject {
 		this.scene.popMatrix()
 	}
 
+	/**
+   * Draws the tail of the helicopter, including the tail rotor.
+   */
 	drawTail() {
 		this.tailMaterial.apply()
 
@@ -493,6 +574,9 @@ export class MyHeli extends CGFobject {
 		this.drawTailRotor()
 	}
 
+	/**
+   * Draws the landing gear of the helicopter.
+   */
 	drawLandingGear() {
 		this.bodyMaterial.apply()
 
@@ -535,6 +619,9 @@ export class MyHeli extends CGFobject {
 		this.scene.popMatrix()
 	}
 
+	/**
+   * Displays the helicopter and its components in the scene.
+   */
 	display() {
 		this.scene.pushMatrix()
 

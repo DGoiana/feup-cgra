@@ -25,6 +25,9 @@ export class MyPanorama extends CGFobject {
     this.appearance.setTexture(texture)
   }
 
+  /**
+   * Displays panorama in the scene
+   */
   display() {
     this.appearance.apply()
       

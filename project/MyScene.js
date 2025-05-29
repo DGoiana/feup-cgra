@@ -29,6 +29,7 @@ export class MyScene extends CGFscene {
     
     this.textureManager = new TextureManager(this);
 
+    // defining default screen settings
     this.speedFactor = 0.85;
     this.fireAnimation = false;
     this.firePercentage = 0.3
@@ -39,18 +40,19 @@ export class MyScene extends CGFscene {
 
     this.buildingFloors = 5
     this.buildingWindows = 3
-
     this.helicopterColor = [128, 128, 128];
     this.buildingColor = [255, 255, 255];
-
     this.cameraMode = 'Free View';
     this.lastCameraMode = 'Free View';
 
-    this.enableTextures(true);    
+    this.enableTextures(true);
     this.setUpdatePeriod(50);
     
     this.appStartTime = Date.now();      
-    this.axis = new CGFaxis(this, 20, 1);    this.plane = new MyPlane(this, 64);    
+    this.axis = new CGFaxis(this, 20, 1);
+
+    // loading scene objects
+    this.plane = new MyPlane(this, 64);    
     this.building = new MyBuilding(this, 10, this.buildingFloors, this.buildingWindows, this.buildingColor);
     this.panorama = new MyPanorama(this);
     this.forest = new MyForest(this, this.forestRows, this.forestCols, this.treesOffset, this.treeHeight, this.firePercentage);
@@ -62,6 +64,9 @@ export class MyScene extends CGFscene {
     this.initMaterials();
   }
 
+  /** 
+   * Initiates materials for the scene
+  */
   initMaterials() {
     this.planeMap = this.textureManager.getTexture("textures/planeMap.png");
     this.waterTex = this.textureManager.getTexture("textures/waterTex2.jpg");
@@ -74,6 +79,9 @@ export class MyScene extends CGFscene {
     this.heli.updateMaterials(this.helicopterColor);
   }
 
+  /**
+   * Initiates lights on the scene
+   */
   initLights() {
     this.lights[0].setPosition(200, 200, 200, 1);
     this.lights[0].setDiffuse(1.0, 1.0, 1.0, 1.0);
@@ -81,6 +89,9 @@ export class MyScene extends CGFscene {
     this.lights[0].update();
   }  
   
+  /**
+   * Initiates cameras on the scene
+   */
   initCameras() {
     this.camera = new CGFcamera(
       1,
@@ -96,6 +107,10 @@ export class MyScene extends CGFscene {
     };
   }  
   
+  /**
+   * Updates current scene
+   * @param {number} t - time elapsed in milliseconds
+   */
   update(t) {
     let appStartTime = (t - this.appStartTime) / 1000.0
 
@@ -103,7 +118,8 @@ export class MyScene extends CGFscene {
 
     if (this.heli) {
       this.heli.update(appStartTime, this.speedFactor);
-
+            
+      // Update camera view
       if (this.cameraMode !== this.lastCameraMode) {
         if (this.cameraMode === 'Free View') {
           this.camera.setPosition([
@@ -141,6 +157,7 @@ export class MyScene extends CGFscene {
       }
     }
     
+    // Regenerates building and reposition helicopter if needed
     if (this.building) {
       this.building.update(appStartTime);
       
@@ -159,6 +176,9 @@ export class MyScene extends CGFscene {
     }
   }
 
+  /**
+   * Sets up default appeareance (serves to reset the appearance on the scene)
+   */
   setDefaultAppearance() {
     this.setAmbient(0.5, 0.5, 0.5, 1.0);
     this.setDiffuse(0.5, 0.5, 0.5, 1.0);
@@ -166,6 +186,9 @@ export class MyScene extends CGFscene {
     this.setShininess(10.0);
   }
 
+  /**
+   * Displays the main scene
+   */
   display() {
     // ---- BEGIN Background, camera and axis setup
     // Clear image and depth buffer everytime we update the scene
@@ -186,6 +209,7 @@ export class MyScene extends CGFscene {
     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
     this.panorama.display();    
 
+    // Draw plane and water
     this.pushMatrix();
       this.setActiveShader(this.shader);
         this.planeMap.bind(0);
@@ -197,26 +221,35 @@ export class MyScene extends CGFscene {
       this.setActiveShader(this.defaultShader);
     this.popMatrix();
 
+    // Draw forest
     this.pushMatrix();
       this.forest.display();
     this.popMatrix();
 
+    // Draw helicopter
     this.pushMatrix();
       this.heli.display();
     this.popMatrix();
 
+    // Draw building
     this.pushMatrix();
       this.translate(-110, 0, -40);
       this.building.display();
     this.popMatrix();
   }
 
+  /**
+   * Updates the Helicopter color, according to one chosen in the interface
+   */
   updateHelicopterColor() {
     if (this.heli) {
       this.heli.updateMaterials(this.helicopterColor);
     }
   }
 
+  /**
+   * Updates the Building color, according to one chosen in the interface
+   */
   updateBuildingColor() {
     if (this.building) {
       this.building.color = this.buildingColor;
