@@ -34,6 +34,7 @@ export class MyScene extends CGFscene {
     this.treesOffset = 5
     this.forestRows = 20
     this.forestCols = 20
+    this.treeHeight = 5.5;
 
     this.buildingFloors = 5
     this.buildingWindows = 3
@@ -48,12 +49,10 @@ export class MyScene extends CGFscene {
     this.setUpdatePeriod(50);
     
     this.appStartTime = Date.now();      
-    this.axis = new CGFaxis(this, 20, 1);
-
-    this.plane = new MyPlane(this, 64);    
+    this.axis = new CGFaxis(this, 20, 1);    this.plane = new MyPlane(this, 64);    
     this.building = new MyBuilding(this, 10, this.buildingFloors, this.buildingWindows, this.buildingColor);
     this.panorama = new MyPanorama(this);
-    this.forest = new MyForest(this, this.forestRows, this.forestCols, this.treesOffset);
+    this.forest = new MyForest(this, this.forestRows, this.forestCols, this.treesOffset, this.treeHeight);
     this.heli = new MyHeli(this);
     
     this.shader = new CGFshader(this.gl, "shaders/plane.vert", "shaders/plane.frag");    
@@ -132,14 +131,15 @@ export class MyScene extends CGFscene {
         ]);
         this.camera.setTarget([heliPos.x, heliPos.y, heliPos.z]);
       }
-    }    
-      if (this.forest) {
+    }      
+    
+    if (this.forest) {
       if (this.fireAnimation) this.forest.update(appStartTime)
 
-      if(this.forest.offset != this.treesOffset || this.forest.rows != this.forestRows || this.forest.columns != this.forestCols) {
-        this.forest.regenerateForest(this.treesOffset, this.forestRows, this.forestCols)
+      if(this.forest.offset != this.treesOffset || this.forest.rows != this.forestRows || this.forest.columns != this.forestCols || this.forest.treeHeight != this.treeHeight) {
+        this.forest.regenerateForest(this.treesOffset, this.forestRows, this.forestCols, this.treeHeight)
       }
-    }    
+    }
     
     if (this.building) {
       this.building.update(appStartTime);
