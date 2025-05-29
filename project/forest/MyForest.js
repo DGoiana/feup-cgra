@@ -39,8 +39,8 @@ export class MyForest extends CGFobject {
     this.fireAppearance.setTexture(this.fireTexture);
     this.fireAppearance.setTextureWrap('REPEAT', 'REPEAT');
 
-		this.generateForest()
-		this.generateFire()
+		this.generateForest(this.rows, this.columns)
+		this.generateFire(this.rows, this.columns)
 	}
 
 	isOverForest(x, z) {
@@ -64,17 +64,20 @@ export class MyForest extends CGFobject {
 		return distance <= lakeRadius;
 	}
 
-	regenerateForest(newOffset) {
+	regenerateForest(newOffset, rows, cols) {
 		this.offset = newOffset
+		this.rows = rows
+		this.columns = cols
+
 		this.trees = []
 		this.fires = []
-		this.generateForest()
-		this.generateFire()
+		this.generateForest(rows, cols)
+		this.generateFire(rows, cols)
 	}
 
-	generateForest() {
-		for(let row = 0; row < this.rows; row++) {
-			for(let col = 0; col < this.columns; col++) {
+	generateForest(rows, cols) {
+		for(let row = 0; row < rows; row++) {
+			for(let col = 0; col < cols; col++) {
 
 				let offset = Math.random() * this.offset
 
@@ -103,9 +106,9 @@ export class MyForest extends CGFobject {
 		}
 	}
 
-	generateFire() {
-		for(let row = 0; row < this.rows; row++) {
-			for(let col = 0; col < this.columns; col++) {
+	generateFire(rows, cols) {
+		for(let row = 0; row < rows; row++) {
+			for(let col = 0; col < cols; col++) {
 				if(Math.random() < .3) {
 					let offset = Math.random() * this.offset
 

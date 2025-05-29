@@ -32,6 +32,11 @@ export class MyScene extends CGFscene {
     this.speedFactor = 0.1;
     this.fireAnimation = false;
     this.treesOffset = 5
+    this.forestRows = 20
+    this.forestCols = 20
+
+    this.buildingFloors = 5
+    this.buildingWindows = 3
 
     this.cameraMode = 'Free View';
     this.lastCameraMode = 'Free View';
@@ -39,22 +44,18 @@ export class MyScene extends CGFscene {
     this.enableTextures(true);    
     this.setUpdatePeriod(50);
     
-    this.appStartTime = Date.now();
-
+    this.appStartTime = Date.now();    
     this.axis = new CGFaxis(this, 20, 1);
     this.plane = new MyPlane(this, 64);    
-    this.building = new MyBuilding(this, 10, 5, 3, [255,255,255]);
+    this.building = new MyBuilding(this, 10, this.buildingFloors, this.buildingWindows, [255,255,255]);
     this.panorama = new MyPanorama(this);      
-    this.forest = new MyForest(this, 20, 20, this.treesOffset);
-    this.heli = new MyHeli(this);    
+    this.forest = new MyForest(this, this.forestRows, this.forestCols, this.treesOffset);
+    this.heli = new MyHeli(this);
     
     this.shader = new CGFshader(this.gl, "shaders/plane.vert", "shaders/plane.frag");    
     this.shader.setUniformsValues({ timeFactor: 0, uWaterSampler: 1, uTerrainSampler: 2 });
 
     this.initMaterials();
-
-    this.grassAppearance = new CGFappearance(this);
-    this.grassAppearance.setDiffuse(1, 1, 1, 1);
   }
 
   initMaterials() {
@@ -127,17 +128,29 @@ export class MyScene extends CGFscene {
         this.camera.setTarget([heliPos.x, heliPos.y, heliPos.z]);
       }
     }    
-    
-    if (this.forest) {
+      if (this.forest) {
       if (this.fireAnimation) this.forest.update(appStartTime)
 
-      if(this.forest.offset != this.treesOffset) {
-        this.forest.regenerateForest(this.treesOffset)
+      if(this.forest.offset != this.treesOffset || this.forest.rows != this.forestRows || this.forest.columns != this.forestCols) {
+        this.forest.regenerateForest(this.treesOffset, this.forestRows, this.forestCols)
       }
-    }
-
+    }    
+    
     if (this.building) {
       this.building.update(appStartTime);
+      
+      if(this.building.numFloor != this.buildingFloors || 
+         this.building.buildingFloor.numWindow != this.buildingWindows) {
+        
+        const idleHeli = this.heli && this.heli.state === 0;
+        
+        this.building.regenerateBuilding(this.buildingFloors, this.buildingWindows);    
+        
+        if (idleHeli) {
+          const newHeight = this.building.getHeight();
+          this.heli.position.y = newHeight;
+        }
+      }
     }
   }
 

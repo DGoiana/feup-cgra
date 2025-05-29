@@ -8,8 +8,6 @@ import { MyDropSystem } from '../environment/MyDrop.js'
 
 const MAIN_ROTOR_SPEED = 4
 const TAIL_ROTOR_SPEED = 10
-const CRUISING_ALTITUDE = 40
-const BUCKET_ALTITUDE = 35
 
 const STATES = {
 	IDLE: 0,
@@ -179,7 +177,9 @@ export class MyHeli extends CGFobject {
 	}
 
 	rest() {
-		this.position = {x: -110, y: 32.25, z: -34}
+		const height = this.scene.building ? this.scene.building.getHeight() : 32.25;
+		
+		this.position = {x: -110, y: height, z: -34}
 		this.bucketPosition = {x: 0, y: -.25, z: 0}
 		this.velocity = {x: 0, y: 0, z: 0}
 		this.orientation = 0
@@ -227,7 +227,7 @@ export class MyHeli extends CGFobject {
 	handleNavigation(delta_t, speedFactor) {
 		const dx = -110 - this.position.x
 		const dz = -34 - this.position.z
-		const dy = CRUISING_ALTITUDE - this.position.y
+		const dy = (this.scene.building.getHeight() + 15) - this.position.y
 
     const horizontalDistance = Math.hypot(dx, dz);
 
@@ -262,7 +262,9 @@ export class MyHeli extends CGFobject {
 	}
 
 	handleDescent() {
-		if (this.position.y <= 32.25) {
+		const height = this.scene.building ? this.scene.building.getHeight() : 32.25;
+
+		if (this.position.y <= height + 0.5) {
 			this.rest()
 			this.landingPhase = LANDING_PHASES.LANDED
 		}
@@ -324,11 +326,11 @@ export class MyHeli extends CGFobject {
 
 		switch(this.state) {
 			case STATES.ASCENDING:
-				if (this.position.y >= CRUISING_ALTITUDE) {
+				if (this.position.y >= (this.scene.building.getHeight() + 15)) {
 					this.toggleCruise()
 				}
 
-				if (this.position.y >= BUCKET_ALTITUDE && this.position.y < CRUISING_ALTITUDE - 4 && !this.bucketFilled) {
+				if (this.position.y >= this.scene.building.getHeight() + 10 && this.position.y < this.scene.building.getHeight() + 11 && !this.bucketFilled) {
 					this.showingRope = true
 					this.bucketPosition.y -= 0.1
 				}
@@ -336,11 +338,11 @@ export class MyHeli extends CGFobject {
 			case STATES.LANDING:
 				this.handleLandingLogic(delta_t, speedFactor)
 
-				if (this.position.y <= CRUISING_ALTITUDE - 4 && this.position.y >= BUCKET_ALTITUDE) {
+				if (this.position.y <= this.scene.building.getHeight() + 11 && this.position.y >= this.scene.building.getHeight() + 10) {
 					this.bucketPosition.y += 0.1
 				}
 
-				if (this.position.y <= BUCKET_ALTITUDE) {
+				if (this.position.y <= this.scene.building.getHeight() + 10) {
 					this.showingRope = false
 				}
 				break

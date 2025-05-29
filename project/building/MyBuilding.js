@@ -82,4 +82,21 @@ export class MyBuilding extends CGFobject {
   update(t) {
     this.topFloor.update(t);
   }
+
+  regenerateBuilding(numFloor, numWindow) {
+    this.numFloor = numFloor;
+    this.buildingFloor = new MyBuildingFloor(this.scene, numWindow, false, false);
+    this.baseFloor = new MyBuildingFloor(this.scene, numWindow, true, false);
+    this.topFloor = new MyBuildingFloor(this.scene, numWindow, false, true);
+    
+    if (this.colorMaterial) {
+      this.buildingFloor.initMaterials(this.scene.textureManager);
+      this.baseFloor.initMaterials(this.scene.textureManager);
+      this.topFloor.initMaterials(this.scene.textureManager);
+    }
+  }
+
+  getHeight() {
+    return (this.numFloor + 1) * (this.totalLength / 2) + 2.25;
+  }
 }
