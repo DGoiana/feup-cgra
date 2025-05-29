@@ -98,11 +98,9 @@ export class MyHeli extends CGFobject {
 		this.landingPhase = null
 
 		this.lastHeliportTexture = null
-
-		this.initMaterials()
 	}
 
-	initMaterials() {
+	initMaterials(_) {
 
 		this.bodyMaterial = new CGFappearance(this.scene)
 		this.bodyMaterial.setAmbient(0.2, 0.2, 0.2, 1.0)
@@ -149,7 +147,7 @@ export class MyHeli extends CGFobject {
 
 	updateHeliportTexture(texturePath) {
 		if (this.lastHeliportTexture !== texturePath) {
-			this.scene.building.topFloor.heliport.updateTexture(texturePath)
+			this.scene.building.topFloor.heliport.updateTexture(this.scene.textureManager, texturePath)
 			this.lastHeliportTexture = texturePath
 		}
 	}

@@ -8,11 +8,16 @@ import { Sphere } from "../common/Sphere.js";
  * @param {CGFtexture} texture
 */
 export class MyPanorama extends CGFobject {
-  constructor(scene, texture) {
+  constructor(scene) {
     super(scene)
     
     this.sphere = new Sphere(scene, 50, 50, 1000)
-    this.appearance = new CGFappearance(scene)
+    this.appearance = null
+  }
+
+  initMaterials(textureManager) {
+    const texture = textureManager.getTexture("images/sky.png");
+    this.appearance = new CGFappearance(this.scene)
     this.appearance.setAmbient(0, 0, 0, 0)
     this.appearance.setDiffuse(0, 0, 0, 0)
     this.appearance.setSpecular(0, 0, 0, 0)
@@ -22,15 +27,11 @@ export class MyPanorama extends CGFobject {
 
   display() {
     this.appearance.apply()
-    
+      
     this.scene.pushMatrix()
-
-    const cameraPos = this.scene.camera.position
-
-    this.scene.translate(cameraPos[0], cameraPos[1], cameraPos[2])
-
-    this.sphere.display()
-
+      const cameraPos = this.scene.camera.position
+      this.scene.translate(cameraPos[0], cameraPos[1], cameraPos[2])
+      this.sphere.display()
     this.scene.popMatrix()
   }
 }

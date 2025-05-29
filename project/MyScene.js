@@ -4,6 +4,7 @@ import { MyPanorama } from "./environment/MyPanorama.js";
 import { MyForest } from "./forest/MyForest.js"
 import { MyBuilding } from './building/MyBuilding.js'
 import { MyHeli } from "./helicopter/MyHeli.js";
+import { TextureManager } from "./common/TextureManager.js";
 
 /**
  * MyScene
@@ -24,34 +25,47 @@ export class MyScene extends CGFscene {
     this.gl.enable(this.gl.DEPTH_TEST);
     this.gl.enable(this.gl.CULL_FACE);
     this.gl.depthFunc(this.gl.LEQUAL);
-    
     this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
+    
+    this.textureManager = new TextureManager(this);
+
     this.speedFactor = 0.1;
-    
-    this.enableTextures(true);    
-    this.setUpdatePeriod(50);
-    
+    this.fireAnimation = false;
+    this.treesOffset = 5
+
     this.cameraMode = 'Free View';
     this.lastCameraMode = 'Free View';
 
-    this.appStartTime = Date.now();
+    this.enableTextures(true);    
+    this.setUpdatePeriod(50);
     
-    this.axis = new CGFaxis(this, 20, 1);
-    this.plane = new MyPlane(this, 64);
-    this.building = new MyBuilding(this, 10, 5, 3, 'images/window.png', [255,255,255]);
-    this.panorama = new MyPanorama(this, new CGFtexture(this, "images/sky.png"));      
-    this.forest = new MyForest(this, 20, 20);
-    this.heli = new MyHeli(this);
+    this.appStartTime = Date.now();
 
-    this.shader = new CGFshader(this.gl, "shaders/plane.vert", "shaders/plane.frag");
+    this.axis = new CGFaxis(this, 20, 1);
+    this.plane = new MyPlane(this, 64);    
+    this.building = new MyBuilding(this, 10, 5, 3, [255,255,255]);
+    this.panorama = new MyPanorama(this);      
+    this.forest = new MyForest(this, 20, 20, this.treesOffset);
+    this.heli = new MyHeli(this);    
+    
+    this.shader = new CGFshader(this.gl, "shaders/plane.vert", "shaders/plane.frag");    
     this.shader.setUniformsValues({ timeFactor: 0, uWaterSampler: 1, uTerrainSampler: 2 });
 
-    this.planeMap = new CGFtexture(this, "textures/planeMap.png");
-    this.waterTex = new CGFtexture(this, "textures/waterTex2.jpg");
-    this.terrainTex = new CGFtexture(this, "images/grass.jpg");
+    this.initMaterials();
 
     this.grassAppearance = new CGFappearance(this);
     this.grassAppearance.setDiffuse(1, 1, 1, 1);
+  }
+
+  initMaterials() {
+    this.planeMap = this.textureManager.getTexture("textures/planeMap.png");
+    this.waterTex = this.textureManager.getTexture("textures/waterTex2.jpg");
+    this.terrainTex = this.textureManager.getTexture("images/grass.jpg");
+    
+    this.building.initMaterials(this.textureManager);
+    this.panorama.initMaterials(this.textureManager);
+    this.forest.initMaterials(this.textureManager);
+    this.heli.initMaterials(this.textureManager);
   }
 
   initLights() {
@@ -115,7 +129,11 @@ export class MyScene extends CGFscene {
     }    
     
     if (this.forest) {
-      // this.forest.update(appStartTime)
+      if (this.fireAnimation) this.forest.update(appStartTime)
+
+      if(this.forest.offset != this.treesOffset) {
+        this.forest.regenerateForest(this.treesOffset)
+      }
     }
 
     if (this.building) {

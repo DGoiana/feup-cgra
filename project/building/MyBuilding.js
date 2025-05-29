@@ -2,22 +2,31 @@ import { CGFobject, CGFappearance } from '../../lib/CGF.js';
 import { MyBuildingFloor } from './MyBuildingFloor.js';
 
 export class MyBuilding extends CGFobject {
-	constructor(scene,totalLength,numFloor,numWindow,windowTexture,color = [255,255,255]) {
+	constructor(scene, totalLength, numFloor, numWindow, color = [255,255,255]) {
     super(scene);
 
-    this.numFloor       = numFloor
-    this.buildingFloor  = new MyBuildingFloor(this.scene,numWindow,windowTexture,false,false);
-    this.baseFloor      = new MyBuildingFloor(this.scene,numWindow,windowTexture,true,false);
-    this.topFloor       = new MyBuildingFloor(this.scene,numWindow,windowTexture,false,true);
+    this.numFloor       = numFloor;
+    this.buildingFloor  = new MyBuildingFloor(this.scene,numWindow,false,false);
+    this.baseFloor      = new MyBuildingFloor(this.scene,numWindow,true,false);
+    this.topFloor       = new MyBuildingFloor(this.scene,numWindow,false,true);
     this.totalLength    = totalLength;
     this.color          = color;
 
+    this.colorMaterial = null;
+
+  }
+
+  initMaterials(textureManager) {
     const [r,g,b] = this.color
     this.colorMaterial = new CGFappearance(this.scene);
     this.colorMaterial.setAmbient(r/255 * 0.5,g/255 * 0.5,b/255 * 0.5, 1);
     this.colorMaterial.setDiffuse(r/255 * 0.5,g/255 * 0.5,b/255 * 0.5, 1);
     this.colorMaterial.setDiffuse(r/255 * 0.5,g/255 * 0.5,b/255 * 0.5, 1);
     this.colorMaterial.setShininess(10.0);
+
+    this.buildingFloor.initMaterials(textureManager);
+    this.baseFloor.initMaterials(textureManager);
+    this.topFloor.initMaterials(textureManager);
   }
 
 	display() {

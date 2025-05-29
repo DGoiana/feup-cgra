@@ -21,6 +21,10 @@ export class MyInterface extends CGFinterface {
 
         this.gui.add(this.scene, 'cameraMode', ['Free View', 'Helicopter View']).name('Camera Mode');
 
+        this.gui.add(this.scene, 'fireAnimation', false).name('Fire Animation')
+
+        this.gui.add(this.scene, 'treesOffset', 5, 15).name('Trees Spacing')
+
         this.initKeys();
 
         return true;

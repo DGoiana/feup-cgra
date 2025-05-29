@@ -4,7 +4,7 @@ import { MyQuad } from '../common/MyQuad.js';
 import { MyLight } from './MyLight.js';
 
 export class MyBuildingFloor extends CGFobject {
-	constructor(scene, numWindow, windowTexture, baseFloor = false, topFloor = false, ) {
+	constructor(scene, numWindow, baseFloor = false, topFloor = false, ) {
     super(scene);
     //this.initBuffers();
     this.quad = new MyQuad(scene);
@@ -14,13 +14,11 @@ export class MyBuildingFloor extends CGFobject {
     this.baseFloor = baseFloor
 
     for(let i = 0; i < numWindow; i++) {
-      this.windows.push(new MyWindow(scene,windowTexture))
+      this.windows.push(new MyWindow(scene))
     }
 
-    this.heliportImagePath = 'images/heliport.jpg'
-
-    this.heliport = new MyWindow(scene, this.heliportImagePath);
-    this.entrance = new MyWindow(scene,'images/entrance.jpg');
+    this.heliport = new MyWindow(scene);
+    this.entrance = new MyWindow(scene);
 
     this.lights = [
       new MyLight(scene), // corner 1 
@@ -30,11 +28,17 @@ export class MyBuildingFloor extends CGFobject {
     ]
   }
 
-  update(t) {
+  initMaterials(textureManager) {
+    this.windows.forEach((w) => w.initMaterials(textureManager))
     
-    for (let light of this.lights) {
-      light.update(t);
-    }
+    this.heliport.initMaterials(textureManager, 'images/heliport.jpg');
+    this.entrance.initMaterials(textureManager, 'images/entrance.jpg');
+    
+    this.lights.forEach((l) => l.initMaterials(textureManager))
+  }
+
+  update(t) {
+    this.lights.forEach((l) => l.update(t))
   }
 
 	display() {

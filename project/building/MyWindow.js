@@ -2,31 +2,34 @@ import {CGFappearance, CGFobject, CGFtexture} from '../../lib/CGF.js';
 import { MyQuad } from '../common/MyQuad.js';
 
 export class MyWindow extends CGFobject {
-  constructor(scene, windowTexture) {
+  constructor(scene) {
     super(scene);
-    this.texture = windowTexture;
     this.quad = new MyQuad(scene);
 
+    this.windowMaterial = null;
+    this.windowTexture = null;
+  }
 
+  initMaterials(textureManager, texturePath = 'images/window.png') {
     this.windowMaterial = new CGFappearance(this.scene);
     this.windowMaterial.setAmbient(0.5, 0.5, 0.5, 1);
     this.windowMaterial.setDiffuse(0.9, 0.9, 0.9, 1);
     this.windowMaterial.setSpecular(0.1, 0.1, 0.1, 1);
     this.windowMaterial.setShininess(10.0);
-    this.windowMaterial.loadTexture('images/default.png');
     this.windowMaterial.setTextureWrap('REPEAT', 'REPEAT');
 
-    this.windowTexture = new CGFtexture(this.scene,this.texture);
+    this.windowTexture = textureManager.getTexture(texturePath);
     this.windowMaterial.setTexture(this.windowTexture);
   }
 
-  updateTexture(newTexture) {
-    this.texture = newTexture
-    this.windowTexture = new CGFtexture(this.scene, this.texture)
-    this.windowMaterial.setTexture(this.windowTexture)
+  updateTexture(textureManager, texturePath) {
+    this.windowTexture = textureManager.getTexture(texturePath);
+    if(this.windowMaterial) {
+      this.windowMaterial.setTexture(this.windowTexture);
+    }
   }
 
-  display() {
+  display() {    
     this.scene.pushMatrix();
       this.windowMaterial.apply();
       this.scene.gl.texParameteri(this.scene.gl.TEXTURE_2D, this.scene.gl.TEXTURE_MAG_FILTER, this.scene.gl.NEAREST);

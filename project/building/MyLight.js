@@ -10,11 +10,9 @@ export class MyLight extends CGFobject {
     this.time = 0;
     this.baseIntensity = 2;
     this.flickerSpeed = 5.0;
-
-    this.initMaterials()
   }
 
-  initMaterials() {
+  initMaterials(_) {
     this.lightMaterial = new CGFappearance(this.scene);
     this.lightMaterial.setAmbient(1, .2, .2, 1);
     this.lightMaterial.setDiffuse(1, .2, .2, 1);

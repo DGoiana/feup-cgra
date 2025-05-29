@@ -1,4 +1,4 @@
-import { CGFobject } from '../../lib/CGF.js'
+import { CGFobject, CGFtexture, CGFappearance } from '../../lib/CGF.js'
 import { MyTree } from './MyTree.js'
 import { MyFire} from '../environment/MyFire.js'
 
@@ -8,13 +8,36 @@ export const FOREST_CORNER = {
 }
 
 export class MyForest extends CGFobject {
-	constructor(scene, rows, columns) {
+	constructor(scene, rows, columns, offset) {
 		super(scene)
 		this.rows = rows
 		this.columns = columns
 
 		this.trees = []
 		this.fires = []
+
+		this.offset = offset
+
+		this.stemAppearance = null
+		this.leafAppearance = null
+		this.fireAppearance = null
+	}
+
+	initMaterials(textureManager) {
+		this.stemTexture = textureManager.getTexture("textures/wood.jpg");
+		this.stemAppearance = new CGFappearance(this.scene);
+		this.stemAppearance.setTexture(this.stemTexture);
+		this.stemAppearance.setTextureWrap('REPEAT', 'REPEAT');
+
+		this.leafTexture = textureManager.getTexture("textures/leaf.jpg");
+		this.leafAppearance = new CGFappearance(this.scene);
+		this.leafAppearance.setTexture(this.leafTexture);
+		this.leafAppearance.setTextureWrap('REPEAT', 'REPEAT');
+
+		this.fireAppearance = new CGFappearance(this.scene);
+    this.fireTexture = textureManager.getTexture("images/fire.png");
+    this.fireAppearance.setTexture(this.fireTexture);
+    this.fireAppearance.setTextureWrap('REPEAT', 'REPEAT');
 
 		this.generateForest()
 		this.generateFire()
@@ -41,11 +64,19 @@ export class MyForest extends CGFobject {
 		return distance <= lakeRadius;
 	}
 
+	regenerateForest(newOffset) {
+		this.offset = newOffset
+		this.trees = []
+		this.fires = []
+		this.generateForest()
+		this.generateFire()
+	}
+
 	generateForest() {
 		for(let row = 0; row < this.rows; row++) {
 			for(let col = 0; col < this.columns; col++) {
 
-				let offset = Math.random() * 20
+				let offset = Math.random() * this.offset
 
 				let treeX = FOREST_CORNER.x + row * 5 + offset
 				let treeZ = FOREST_CORNER.z + col * 5 + offset
@@ -65,7 +96,7 @@ export class MyForest extends CGFobject {
 
 				let rotation = [Math.random() * (Math.PI / 10), Math.random() < 0.5 ? 0 : 1]
 
-				let tree = new MyTree(this.scene, rotation, radius, height, color)
+				let tree = new MyTree(this.scene, rotation, radius, height, color, this.stemAppearance, this.leafAppearance)
 
 				this.trees.push([tree, treeX, treeZ])
 			}
@@ -76,7 +107,7 @@ export class MyForest extends CGFobject {
 		for(let row = 0; row < this.rows; row++) {
 			for(let col = 0; col < this.columns; col++) {
 				if(Math.random() < .3) {
-					let offset = Math.random() * 20
+					let offset = Math.random() * this.offset
 
 					let fireX = FOREST_CORNER.x + row * 5 + offset
 					let fireZ = FOREST_CORNER.z + col * 5 + offset
@@ -86,7 +117,7 @@ export class MyForest extends CGFobject {
 					}
 
 					let scale = Math.random() * 2.0
-					let fire = new MyFire(this.scene, scale)
+					let fire = new MyFire(this.scene, scale, this.fireAppearance)
 					this.fires.push([fire, fireX, fireZ])
 				}
 			}
