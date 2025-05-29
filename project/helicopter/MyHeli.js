@@ -100,6 +100,10 @@ export class MyHeli extends CGFobject {
 		this.leanAngle = 0;
 
 		this.lastHeliportTexture = null
+
+		// debouncing
+		this.pKeyWasPressed = false;
+		this.lKeyWasPressed = false;
 	}
 
 	initMaterials(_) {
@@ -312,19 +316,29 @@ export class MyHeli extends CGFobject {
 		}
 
 		if (this.scene.gui.isKeyPressed("KeyP")) {
-			this.toggleCruise(speedFactor)
+			if (!this.pKeyWasPressed) {
+				this.toggleCruise(speedFactor);
+				this.pKeyWasPressed = true;
+			}
+		} else {
+			this.pKeyWasPressed = false;
 		}
 
 		if (this.scene.gui.isKeyPressed("KeyO") && this.bucketFilled && this.scene.forest.isOverForest(this.position.x, this.position.z)) {
 			this.clearFire()
 		}
 
-		if (this.scene.gui.isKeyPressed("KeyL") && this.state != STATES.LANDING && this.state != STATES.DESCENDING) {
-			if(this.isOverLake(this.position.x, this.position.z) && !this.bucketFilled) {
-				this.getWater(speedFactor)
-			} else {
-				this.startLanding()
+		if (this.scene.gui.isKeyPressed("KeyL") && this.state != STATES.LANDING && this.state != STATES.DESCENDING && this.state != STATES.ASCENDING) {
+			if (!this.lKeyWasPressed) {
+				if(this.isOverLake(this.position.x, this.position.z) && !this.bucketFilled) {
+					this.getWater(speedFactor)
+				} else {
+					this.startLanding()
+				}
 			}
+			this.lKeyWasPressed = true;
+		} else {
+			this.lKeyWasPressed = false;
 		}
 	}
 
